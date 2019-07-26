@@ -84,17 +84,53 @@ freeCell.numDiff = function(card1, card2) {
 freeCell.takeCard = function(target, number) {
   let token = [];
   if (target[0] == 'p') {
-    return token.put(freeCell.park[target[1]]);
+    token.push(freeCell.park[target[1]]);
+    freeCell.park[target[1]] = '';
+    return token;
   }
   if (target[0] == 'h') {
-    return token.put(freeCell.)
+    token.push(freeCell.home[target[1]]);
+    switch (freeCell.home[target[1]][1]) {
+      case 'A':
+        freeCell.home[target[1]] = freeCell.home[target[1]][0] + '0';
+        break;
+      case '2':
+        freeCell.home[target[1]] = freeCell.home[target[1]][0] + 'A';
+        break;
+      case 'X':
+        freeCell.home[target[1]] = freeCell.home[target[1]][0] + '9';
+        break;
+      case 'J':
+        freeCell.home[target[1]] = freeCell.home[target[1]][0] + 'X';
+        break;
+      case 'Q':
+        freeCell.home[target[1]] = freeCell.home[target[1]][0] + 'J';
+        break;
+      case 'K':
+        freeCell.home[target[1]] = freeCell.home[target[1]][0] + 'Q';
+        break;
+      default: 
+        freeCell.home[target[1]] = freeCell.home[target[1]][0] + freeCell.home[target[1]][1]--;
+        break;
+    }
+    return token;
   }
-
+  if (target[0] == 's') {
+    return freeCell.square[target[1]].splice(freeCell.square[target[1]].length - number, number);
+  }
 }
 
 //增加卡片
-freeCell.placeCard = function(target) {
-  
+freeCell.placeCard = function(target, card) {
+  if (target[0] == 'p') {
+    freeCell.park[target[1]] = card[0];
+  }
+  if (target[0] == 'h') {
+    freeCell.home[target[1]] = card[0];
+  }
+  if (target[0] == 's') {
+    freeCell.square[target[1]] = freeCell.square[target[1]].concat(card);
+  }
 }
 
 //確認可提起張數
