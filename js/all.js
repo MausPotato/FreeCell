@@ -80,6 +80,24 @@ freeCell.numDiff = function(card1, card2) {
   return value1 - value2;
 };
 
+//刪除卡片
+freeCell.takeCard = function(target, number) {
+  let token = [];
+  if (target[0] == 'p') {
+    return token.put(freeCell.park[target[1]]);
+  }
+  if (target[0] == 'h') {
+    return token.put(freeCell.)
+  }
+
+}
+
+//增加卡片
+freeCell.placeCard = function(target) {
+  
+}
+
+//確認可提起張數
 freeCell.numDraggable = function(card) {
   //檢查卡片是否在park
   for (let i = 0; i < freeCell.park.length; i++) {
@@ -125,6 +143,11 @@ freeCell.numDraggable = function(card) {
   //freeCell.square[deck][order];
 };
 
+//確認可移動張數
+freeCell.numMovable = function(m, n) {
+  return Math.pow(2, m) * (n + 1);
+}
+
 //確認是否贏了遊戲
 freeCell.isWin = function() {
   var win = ['SK', 'HK', 'DK', 'CK'];
@@ -159,13 +182,27 @@ freeCell.canMoveHome = function(card, index) {
 };
 
 freeCell.canMoveSquare = function(card, index) {
-  if (freeCell.square[index].length == 0) {
+  let emptySquare = 0;
+  for (let i = 0; i < freeCell.square.length; i++) {
+    if (freeCell.square[i].length == 0) {
+      emptySquare++;
+    }
+  }
+  let emptyPark = 0;
+  for (let i = 0; i < freeCell.park.length; i++) {
+    if (freeCell.park[i] == '') {
+      emptyPark++;
+    }
+  }  
+  let draggable = freeCell.numDraggable(card) > 1;
+  let notTooLong = freeCell.numDraggable(card) <= freeCell.numMovable(emptySquare - 1, emptyPark);
+  if (freeCell.square[index].length == 0 && draggable && notTooLong) {
     return true;
   }
-  let emptySquare = freeCell.square[]
   let diffColor = !freeCell.isSameColor(card, freeCell.square[index]);
-  let Draggable = freeCell.numDraggable(card) > 1
-  if (diffColor && freeCell.numDiff(card, freeCell.square[index]) == -1 && freeCell.numDraggable(card) > 1) {
+  let lessOne = freeCell.numDiff(card, freeCell.square[index]) == -1;
+  notTooLong = freeCell.numDraggable(card) <= freeCell.numMovable(emptySquare, emptyPark);
+  if (diffColor && lessOne && draggable && notTooLong) {
     return true;
   }
   return false;
@@ -179,13 +216,35 @@ freeCell.canMoveSquare = function(card, index) {
 
 freeCell.moveHome = function(card, index) {
   // body...
-};
+};*/
 
 //destination: park[0] ~ park[3]: 'p0' ~ 'p3';
 freeCell.move = function (card, destination) {
-  console.log('Move ' + card + ' to Park ' + index + '.');
+  console.log('Move ' + card + ' to ' + destination + '.');
+  let canMove;
+  if (destination[0] == 'p') {
+    canMove = freeCell.canMovePark(card, destination[1]);
+  }
+  else if (destination[0] == 'h') {
+    canMove = freeCell.canMovePark(card, destination[1]);
+  }
+  else if (destination[0] == 's') {
+    canMove = freeCell.canMoveSquare(card, destination[1]);
+  }
+  else {
+    console.log('error in freeCell.move()');
+  }
+  if (!canMove) {
+    return false;
+  }
+  //delete
+  if (true) {
+
+  }
+  else if (true) {}
+  else if (true) {}
   //移動卡牌, 若成功移動回傳true, 失敗回傳false
   //eg.如果根本沒有card這張牌就回傳false
-  卡牌移至Home若成功放置回傳true
-  卡牌移至Park若成功放置回傳true
-};*/
+  //卡牌移至Home若成功放置回傳true
+  //卡牌移至Park若成功放置回傳true
+};
