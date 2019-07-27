@@ -128,26 +128,10 @@ table {
 .card {
   width: 8.5vw;
   height: 11vw;
-  opacity: .8;
   position: absolute;
-}
-
-#c1 {
-  background-image: url(../card/card_01.png);
   -webkit-background-size: contain;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center center;
-  top: 10vw;
-  left: 10vw;
-}
-
-#c2 {
-  background-image: url(../card/card_15.png);
-  -webkit-background-size: contain;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
-  top: 20vw;
-  left: 20vw;
+  /*transition: top 0.2s;*/
 }

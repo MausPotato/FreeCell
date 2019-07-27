@@ -30,6 +30,27 @@ function show() {
   console.log('square8:', freeCell.square[7]);
 }
 
+freeCell.lookUpTable = {
+  'A': 1,
+  '2': 2,
+  '3': 3,
+  '4': 4,
+  '5': 5,
+  '6': 6,
+  '7': 7,
+  '8': 8,
+  '9': 9,
+  'X': 10,
+  'J': 11,
+  'Q': 12,
+  'K': 13,
+    1: 'A',
+   10: 'X',
+   11: 'J',
+   12: 'Q',
+   13: 'K'
+}
+
 //card1=拿起的卡,card2=放置區的卡
 //確認兩張卡卡花色是否一樣
 freeCell.isSameSuit = function(card1, card2) {
@@ -328,6 +349,7 @@ document.addEventListener("contextmenu", function(e){
 var isMousePressed = false;
 var draggedCard = null;
 function boardMouseDown(e) {
+  e.preventDefault();
   console.log(e.button, 'press');
   if(e.button == 0) {
     isMousePressed = true;
@@ -339,6 +361,7 @@ function boardMouseMove(e) {
     console.log('Dragging...' + draggedCard);
     draggedCard.card.style.top = (e.pageY - draggedCard.offsetY) + 'px';
     draggedCard.card.style.left = (e.pageX - draggedCard.offsetX) + 'px';
+    draggedCard.card.style.zIndex = '99';
   }
 }
 
@@ -346,6 +369,7 @@ function boradMouseUp(e) {
   console.log(e.button, 'release');
   if (e.button == 0) {
     isMousePressed = false;
+    draggedCard.card.style.zIndex = '5';
     draggedCard = null;
   }
 }
@@ -363,3 +387,36 @@ function cardMouseDown(e) {
   return false;
 }
 
+//<div id="c1" class="card" onmousedown="cardMouseDown(event)"></div>
+//<div id="c2" class="card" onmousedown="cardMouseDown(event)"></div>
+function createCards() {
+  for (let i = 0; i <= 51; i++) {
+    let suit = Math.ceil((i + 1) / 13);
+    let point = i % 13 + 1;
+    let element = document.createElement('div');
+    element.classList.add('card');
+    element.style.top = point * 50 + 'px';
+    element.style.left = suit * 100 + 'px';
+    element.style.backgroundImage = 'url(card/card_' + (i + 1) + '.png)';
+    element.addEventListener('mousedown', function() {
+      cardMouseDown(event);
+    });
+    if (suit == 1) {
+      element.id = 'S' + freeCell.lookUpTable[point];
+    }
+    if (suit == 2) {
+      element.id = 'H' + freeCell.lookUpTable[point];
+    }
+    if (suit == 3) {
+      element.id = 'D' + freeCell.lookUpTable[point];
+    }
+    if (suit == 4) {
+      element.id = 'C' + freeCell.lookUpTable[point];
+    }
+    document.querySelector('.gameboard').appendChild(element);
+  }
+}
+
+window.onload = function () {
+  createCards();
+};
