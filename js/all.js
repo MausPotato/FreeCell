@@ -319,3 +319,47 @@ freeCell.move = function (card, destination) {
   //卡牌移至Home若成功放置回傳true
   //卡牌移至Park若成功放置回傳true
 };
+
+
+document.addEventListener("contextmenu", function(e){
+  e.preventDefault();
+}, false);
+
+var isMousePressed = false;
+var draggedCard = null;
+function boardMouseDown(e) {
+  console.log(e.button, 'press');
+  if(e.button == 0) {
+    isMousePressed = true;
+  }
+}
+
+function boardMouseMove(e) {
+  if (isMousePressed && draggedCard != null) {
+    console.log('Dragging...' + draggedCard);
+    draggedCard.card.style.top = (e.pageY - draggedCard.offsetY) + 'px';
+    draggedCard.card.style.left = (e.pageX - draggedCard.offsetX) + 'px';
+  }
+}
+
+function boradMouseUp(e) {
+  console.log(e.button, 'release');
+  if (e.button == 0) {
+    isMousePressed = false;
+    draggedCard = null;
+  }
+}
+
+function cardMouseDown(e) {
+  console.log(e);
+  e.preventDefault();
+  if (e.button == 0) {
+    draggedCard = {
+      card: e.target,
+      offsetX: e.offsetX,
+      offsetY: e.offsetY
+    };
+  }
+  return false;
+}
+
