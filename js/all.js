@@ -348,8 +348,8 @@ document.addEventListener("contextmenu", function(e){
 
 var time = 0;
 var t = window.setInterval(timing, 1000);
-var cardInterval = 3;
-var vw;
+var cardInterval = 5;
+var vh;
 var isMousePressed = false;
 var draggedCards = [];
 function boardMouseDown(e) {
@@ -406,7 +406,7 @@ function cardMouseDown(e) {
         let draggedCard = {
           card: element,
           offsetX: e.offsetX,
-          offsetY: e.offsetY - (cardInterval * vw * i)
+          offsetY: e.offsetY - (cardInterval * vh * i)
         };
         draggedCards.push(draggedCard);
       }
@@ -421,8 +421,8 @@ function createCards() {
     let point = i % 13 + 1;
     let element = document.createElement('div');
     element.classList.add('card');
-    element.style.top = 60 + 'vw';
-    element.style.left = 45.75 + 'vw';
+    element.style.top = 100 + 'vh';
+    element.style.left = 76 + 'vh';
     element.style.backgroundImage = 'url(card/card_' + (i + 1) + '.png)';
     element.addEventListener('mousedown', function() {
       cardMouseDown(event);
@@ -454,7 +454,7 @@ function moveCard(card, destination, index) {
   }
   if (destination[0] == 's') {
     card.classList.add('slowmove');
-    card.style.top = deck.offsetTop + (cardInterval * vw * (index - 1)) + 'px';
+    card.style.top = deck.offsetTop + (cardInterval * vh * (index - 1)) + 'px';
     card.style.left = deck.offsetLeft + 'px';
     if (card.id == 'H2') {
       console.log('deck.offsetLeft:' + deck.offsetLeft);
@@ -520,17 +520,17 @@ function timing() {
   document.getElementById('clock').innerHTML = m + ':' + s;
 }
 
-function calculateVw() {
-  vw = window.innerWidth / 100;
+function calculateVh() {
+  vh = window.innerHeight / 100;
 }
 
 window.onload = function () {
   createCards();
   timing();
-  calculateVw();
+  calculateVh();
   deal();
   window.addEventListener('resize', function(){
-    calculateVw();
+    calculateVh();
     deal();
   }, true);
 };
