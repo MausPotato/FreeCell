@@ -148,8 +148,6 @@ body {
 .square {
   width: 8.5vw;
   height: 11vw;
-  background-color: teal;
-  opacity: .1;
 }
 
 .card {

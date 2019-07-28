@@ -346,6 +346,10 @@ document.addEventListener("contextmenu", function(e){
   e.preventDefault();
 }, false);
 
+var time = 0;
+var t = window.setInterval(timing, 1000);
+var cardInterval = 3;
+var vw;
 var isMousePressed = false;
 var draggedCards = [];
 function boardMouseDown(e) {
@@ -357,11 +361,13 @@ function boardMouseDown(e) {
 }
 
 function boardMouseMove(e) {
-  if (isMousePressed && draggedCards.length == 0) {
+  if (isMousePressed && draggedCards.length != 0) {
     //console.log('Dragging...' + draggedCard);
-    draggedCards[0].card.style.top = (e.pageY - draggedCards[0].offsetY) + 'px';
-    draggedCards[0].card.style.left = (e.pageX - draggedCards[0].offsetX) + 'px';
-    draggedCards[0].card.style.zIndex = '99';
+    for (var i = 0; i < draggedCards.length; i++) {
+      draggedCards[i].card.style.top = (e.pageY - draggedCards[i].offsetY) + 'px';
+      draggedCards[i].card.style.left = (e.pageX - draggedCards[i].offsetX) + 'px';
+      draggedCards[i].card.style.zIndex = '99' + i;
+    }
   }
 }
 
@@ -370,7 +376,10 @@ function boradMouseUp(e) {
   if (e.button == 0) {
     isMousePressed = false;
     if (draggedCards.length != 0) {
-      draggedCards[0].card.style.zIndex = '5';
+      let card = draggedCards[0].card;
+      let c = collisionAll(card);
+      moveCard(card, c, freeCell.square[c[1]].length + 1);
+      draggedCards[0].card.style.zIndex = freeCell.square[c[1]].length + 1;
       draggedCards = [];
     }
   }
@@ -380,12 +389,28 @@ function cardMouseDown(e) {
   console.log(e.target.id + 'is clicked');
   e.preventDefault();
   if (e.button == 0) {
-    let draggedCard = {
-      card: e.target,
-      offsetX: e.offsetX,
-      offsetY: e.offsetY
-    };
-    draggedCards.push(draggedCard);
+    let deck = freeCell.findCard(e.target.id);
+    if (deck[0] == 'p' || deck[0] == 'h') {
+      if (freeCell.numDraggable(e.target.id) == 1) {
+        let draggedCard = {
+          card: e.target,
+          offsetX: e.offsetX,
+          offsetY: e.offsetY
+        };
+        draggedCards.push(draggedCard);
+      }
+    }
+    else if (deck[0] == 's') {
+      for (var i = 0; i < freeCell.numDraggable(e.target.id); i++) {
+        let element = document.getElementById(freeCell.square[deck[1]][freeCell.square[deck[1]].length - freeCell.numDraggable(e.target.id) + i]);
+        let draggedCard = {
+          card: element,
+          offsetX: e.offsetX,
+          offsetY: e.offsetY - (cardInterval * vw * i)
+        };
+        draggedCards.push(draggedCard);
+      }
+    }
   }
   return false;
 }
@@ -418,8 +443,6 @@ function createCards() {
   }
 }
 
-var cardInterval = 3;
-var vw;
 function moveCard(card, destination, index) {
   //card is a element, destination是字串
   let deck = document.getElementById(destination);
@@ -441,6 +464,39 @@ function moveCard(card, destination, index) {
   }
 }
 
+function collision(x1, y1, x2, y2, w, h) {
+  return Math.abs(x1 - x2) < w / 2 && Math.abs(y1 - y2) < 2 * h / 3;
+}
+
+function collisionAll(card) {
+  let element;
+  let x = card.offsetLeft;
+  let y = card.offsetTop;
+  let w = card.offsetWidth;
+  let h = card.offsetHeight;
+  for (let i = 0; i < 4; i++) {
+    element = document.getElementById('p' + i);
+    if (collision(x, y, element.offsetLeft, element.offsetTop, w, h)) {
+      return 'p' + i;
+    }
+    element = document.getElementById('h' + i);
+    if (collision(x, y, element.offsetLeft, element.offsetTop, w, h)) {
+      return 'h' + i;
+    }
+  }
+  for (let i = 0; i < freeCell.square.length; i++) {
+    element = document.getElementById(freeCell.square[i][freeCell.square[i].length - 1]);
+    if (element.id == card.id) {
+      continue;
+    }
+    if (collision(x, y, element.offsetLeft, element.offsetTop, w, h)) {
+      console.log(element);
+      return 's' + i;
+    }
+  }
+  return '';
+}
+
 function deal() {
   //random deck
   for (let i = 0; i < freeCell.square.length; i++) {
@@ -451,8 +507,6 @@ function deal() {
   }
 }
 
-var time = 0;
-var t = window.setInterval(timing, 1000);
 function timing() {
   let m = Math.floor(time / 60);
   let s = time - m * 60;
@@ -475,5 +529,8 @@ window.onload = function () {
   timing();
   calculateVw();
   deal();
-  window.addEventListener('resize', function(){calculateVw();}, true);
+  window.addEventListener('resize', function(){
+    calculateVw();
+    deal();
+  }, true);
 };
