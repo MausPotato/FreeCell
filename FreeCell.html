@@ -5,28 +5,45 @@
 	<title>FreeCell</title>
 	<link rel="stylesheet" href="css/style.css">
 	<script src="js/all.js"></script>
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 </head>
 <body onmousedown="boardMouseDown(event)" onmousemove="boardMouseMove(event)" onmouseup="boradMouseUp(event)">
 	<div class="gameboard">
-    <div class="park"></div>
-    <div class="park"></div>
-    <div class="park"></div>
-    <div class="park"></div>
-    <div class="timer"></div>
-    <div id="s0" class="home"></div>
+    <div class="up">
+    <div id="p0" class="park"></div>
+    <div id="p1" class="park"></div>
+    <div id="p2" class="park"></div>
+    <div id="p3" class="park"></div>
+    <div class="timer">
+      <h2>TIME</h2>
+      <div id="clock"></div>
+    </div>
     <div id="h0" class="home"></div>
-    <div id="d0" class="home"></div>
-    <div id="c0" class="home"></div>
+    <div id="h1" class="home"></div>
+    <div id="h2" class="home"></div>
+    <div id="h3" class="home"></div>
+    </div>
+    <div class="logo">
+      <a href="https://challenge.thef2e.com/user/316?schedule=2898#works-2898" target="blink"><img src="img/icon_logo.png" alt="logo"></a>
+    </div>
     <div class="table">
-      <div class="square" onmousedown="return false"></div>
-      <div class="square" onmousedown="return false"></div>
-      <div class="square" onmousedown="return false"></div>
-      <div class="square" onmousedown="return false"></div>
-      <div class="square" onmousedown="return false"></div>
-      <div class="square" onmousedown="return false"></div>
-      <div class="square" onmousedown="return false"></div>
-      <div class="square" onmousedown="return false"></div>
+      <div id="s0" class="square" onmousedown="return false"></div>
+      <div id="s1" class="square" onmousedown="return false"></div>
+      <div id="s2" class="square" onmousedown="return false"></div>
+      <div id="s3" class="square" onmousedown="return false"></div>
+      <div id="s4" class="square" onmousedown="return false"></div>
+      <div id="s5" class="square" onmousedown="return false"></div>
+      <div id="s6" class="square" onmousedown="return false"></div>
+      <div id="s7" class="square" onmousedown="return false"></div>
+    </div>
+    <div class="button">
+      <button id="undo"><img src="img/icon_undo.png"></button>
+      <button id="hint"><img src="img/icon_hint.png"></button>
+      <button id="restart"><img src="img/icon_restart.png"></button>
+    </div>
+    <div id="restartwindow">
+      <h2>START A NEW GAME?</h2>
+      <a id="no" href="#">NO</a>
+      <a id="yes" href="#">YES</a>
     </div>
   </div>
 </body>

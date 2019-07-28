@@ -41,13 +41,27 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
+@font-face {
+  font-family: Haettenschweiler-Regular;
+  src: local("Haettenschweiler-Regular"),
+    local("Haettenschweiler-Regular"),
+    url(Haettenschweiler-Regular.ttf);
+  font-weight: bold;
+}
+
+body {
+  color: #5E2F2E;
+  font-family: Haettenschweiler-Regular;
+  overflow: hidden;
+}
+
 .gameboard {
   width: 100%;
   height: 60vw;
   padding: 2.5vw;
   background-color: gray;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-wrap: wrap;
   align-items: flex-start;
   box-sizing: border-box;
@@ -56,6 +70,13 @@ table {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center center;
+}
+
+.up {
+  width: 100%;
+  height: 11vw;
+  display: flex;
+  justify-content: space-around;
 }
 
 .park {
@@ -71,16 +92,29 @@ table {
 .timer {
   width: 10vw;
   height: 11vw;
-  background-color: pink;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.timer h2 {
+  text-align: center;
+  font-size: 4.1vw;
+  font-weight: bold;
+  padding-top: 1.5vw;
+}
+
+#clock {
+  text-align: center;
+  font-size: 4.8vw;
+  font-weight: bold;
+  padding-bottom: 2vw;
 }
 
 .home {
   width: 8.5vw;
   height: 11vw;
-}
-
-#s0 {
-  background-image: url(../card/s0.png);
   -webkit-background-size: contain;
   background-size: contain;
   background-repeat: no-repeat;
@@ -88,27 +122,19 @@ table {
 }
 
 #h0 {
+  background-image: url(../card/s0.png);
+}
+
+#h1 {
   background-image: url(../card/h0.png);
-  -webkit-background-size: contain;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
 }
 
-#d0 {
+#h2 {
   background-image: url(../card/d0.png);
-  -webkit-background-size: contain;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
 }
 
-#c0 {
+#h3 {
   background-image: url(../card/c0.png);
-  -webkit-background-size: contain;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
 }
 
 .table {
@@ -123,6 +149,7 @@ table {
   width: 8.5vw;
   height: 11vw;
   background-color: teal;
+  opacity: .1;
 }
 
 .card {
@@ -134,4 +161,91 @@ table {
   background-repeat: no-repeat;
   background-position: center center;
   /*transition: top 0.2s;*/
+}
+
+.logo {
+  -ms-align-self: flex-end;
+  align-self: flex-end;
+}
+
+.logo img {  
+  width: 5vw;
+  height: 5vw;
+}
+
+.button {
+  width: 4.5vw;
+  height: 17vw;
+  -ms-align-self: flex-end;
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.button button {
+  width: 4.5vw;
+  height: 4.5vw;
+  border-radius: 50%;
+  border: none;
+  background-color: #FAFAD7;
+  display: inline-block;
+  cursor: pointer;
+  box-sizing: border-box;
+  box-shadow: 3px 3px #FFAA19;
+}
+
+.button button:active {
+  box-shadow: 0 0 0 1px rgba(255,170,25, 0.15) inset, 0 0 6px rgba(255,170,25, 0.20) inset;
+}
+
+.button button>img:active {
+  transform: translateY(-.1vw);
+}
+
+.button img {
+  width: 3vw;
+  height: 3vw;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#restartwindow {
+  display: none;
+  width: 42vw;
+  height: 21vw;
+  z-index: 100;
+  background-color: #FAFAD7;
+  border: 5px solid #FFBC00;
+  border-radius: 50px;
+  font-size: 4.1vw;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#restartwindow h2 {
+  width: 100%;
+  text-align: center;
+  padding-top: 3.5vw;
+}
+
+#restartwindow a {
+  text-decoration: none;
+}
+
+#no {
+  color: #FA5050;
+  margin-bottom: 3vw;
+  margin-left: 5vw;
+}
+
+#yes {
+  color: #3CBE6E;
+  margin-bottom: 3vw;
+  margin-right: 5vw;
+}
+
+.slowmove {
+  transition: top .5s, left .5s;
 }

@@ -347,56 +347,57 @@ document.addEventListener("contextmenu", function(e){
 }, false);
 
 var isMousePressed = false;
-var draggedCard = null;
+var draggedCards = [];
 function boardMouseDown(e) {
   e.preventDefault();
-  console.log(e.button, 'press');
+  //console.log(e.button, 'press');
   if(e.button == 0) {
     isMousePressed = true;
   }
 }
 
 function boardMouseMove(e) {
-  if (isMousePressed && draggedCard != null) {
-    console.log('Dragging...' + draggedCard);
-    draggedCard.card.style.top = (e.pageY - draggedCard.offsetY) + 'px';
-    draggedCard.card.style.left = (e.pageX - draggedCard.offsetX) + 'px';
-    draggedCard.card.style.zIndex = '99';
+  if (isMousePressed && draggedCards.length == 0) {
+    //console.log('Dragging...' + draggedCard);
+    draggedCards[0].card.style.top = (e.pageY - draggedCards[0].offsetY) + 'px';
+    draggedCards[0].card.style.left = (e.pageX - draggedCards[0].offsetX) + 'px';
+    draggedCards[0].card.style.zIndex = '99';
   }
 }
 
 function boradMouseUp(e) {
-  console.log(e.button, 'release');
+  //console.log(e.button, 'release');
   if (e.button == 0) {
     isMousePressed = false;
-    draggedCard.card.style.zIndex = '5';
-    draggedCard = null;
+    if (draggedCards.length != 0) {
+      draggedCards[0].card.style.zIndex = '5';
+      draggedCards = [];
+    }
   }
 }
 
 function cardMouseDown(e) {
-  console.log(e);
+  console.log(e.target.id + 'is clicked');
   e.preventDefault();
   if (e.button == 0) {
-    draggedCard = {
+    let draggedCard = {
       card: e.target,
       offsetX: e.offsetX,
       offsetY: e.offsetY
     };
+    draggedCards.push(draggedCard);
   }
   return false;
 }
 
-//<div id="c1" class="card" onmousedown="cardMouseDown(event)"></div>
-//<div id="c2" class="card" onmousedown="cardMouseDown(event)"></div>
 function createCards() {
   for (let i = 0; i <= 51; i++) {
     let suit = Math.ceil((i + 1) / 13);
     let point = i % 13 + 1;
     let element = document.createElement('div');
     element.classList.add('card');
-    element.style.top = point * 50 + 'px';
-    element.style.left = suit * 100 + 'px';
+    element.style.top = 60 + 'vw';
+    element.style.left = 45.75 + 'vw';
     element.style.backgroundImage = 'url(card/card_' + (i + 1) + '.png)';
     element.addEventListener('mousedown', function() {
       cardMouseDown(event);
@@ -417,6 +418,62 @@ function createCards() {
   }
 }
 
+var cardInterval = 3;
+var vw;
+function moveCard(card, destination, index) {
+  //card is a element, destination是字串
+  let deck = document.getElementById(destination);
+  if (destination[0] == 'p' || destination[0] == 'h') {
+    card.classList.add('slowmove');
+    card.style.top = deck.offsetTop + 'px';
+    card.style.left = deck.offsetLeft + 'px';
+    setTimeout(function() {card.classList.remove('slowmove');}, 500);
+  }
+  if (destination[0] == 's') {
+    card.classList.add('slowmove');
+    card.style.top = deck.offsetTop + (cardInterval * vw * (index - 1)) + 'px';
+    card.style.left = deck.offsetLeft + 'px';
+    if (card.id == 'H2') {
+      console.log('deck.offsetLeft:' + deck.offsetLeft);
+    }
+    card.style.zIndex = index;
+    setTimeout(function() {card.classList.remove('slowmove');}, 500);
+  }
+}
+
+function deal() {
+  //random deck
+  for (let i = 0; i < freeCell.square.length; i++) {
+    for (let j = 0; j < freeCell.square[i].length; j++) {
+      let element = document.getElementById(freeCell.square[i][j]);
+      moveCard(element, 's' + i, j + 1);
+    }
+  }
+}
+
+var time = 0;
+var t = window.setInterval(timing, 1000);
+function timing() {
+  let m = Math.floor(time / 60);
+  let s = time - m * 60;
+  time++;
+  if (s < 10) {
+    s = '0' + s;
+  }
+  if (m < 10) {
+    m = '0' + m;
+  }
+  document.getElementById('clock').innerHTML = m + ':' + s;
+}
+
+function calculateVw() {
+  vw = window.innerWidth / 100;
+}
+
 window.onload = function () {
   createCards();
+  timing();
+  calculateVw();
+  deal();
+  window.addEventListener('resize', function(){calculateVw();}, true);
 };
