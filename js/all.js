@@ -68,7 +68,7 @@ function boardMouseMove(e) {
   }
 }
 
-function boradMouseUp(e) {
+function boardMouseUp(e) {
   //console.log(e.button, 'release');
   if (e.button == 0) {
     isMousePressed = false;
@@ -87,6 +87,9 @@ function boradMouseUp(e) {
           timerStart();
         }
         render();
+        if (freeCell.isWin()) {
+          timerPause();
+        }
       }
       draggedCards = [];
     }
@@ -155,17 +158,17 @@ function createCards() {
 function moveCard(card, destination, index) {
   //card is a element, destination是字串
   let deck = document.getElementById(destination);
-  let cardInterval = Math.min(40 / freeCell.square[destination[1]].length, 5);
+  let cardInterval = Math.min(50 / freeCell.square[destination[1]].length, 5);
   card.classList.add('slowmove');
   card.style.top = deck.offsetTop + (cardInterval * vh * (index - 1)) + 'px';
   //console.log('mcard', card.id);
   card.style.left = deck.offsetLeft + 'px';
   card.style.zIndex = 50 + index;
-  console.log(card.style.zIndex);
+  //console.log(card.style.zIndex);
   setTimeout(function() {
     card.style.zIndex = index;
     card.classList.remove('slowmove');
-    console.log(card.style.zIndex);
+    //console.log(card.style.zIndex);
   }, 500);
 }
 
@@ -190,6 +193,7 @@ function collisionAll(card) {
     }
   }
   let deck = freeCell.findCard(card.id);
+  let targetDebug = 'targetDebug:';
   for (let i = 0; i < freeCell.square.length; i++) {
     if (deck[0] == 's' && deck[1] == i) {
       continue;
@@ -201,13 +205,14 @@ function collisionAll(card) {
     else {
       target = 's' + i;
     }
-    console.log(target);
+    targetDebug += (' ' + target);
     element = document.getElementById(target);
     if (collision(x, y, element.offsetLeft, element.offsetTop, w, h)) {
       console.log(element);
       return 's' + i;
     }
   }
+  console.log(targetDebug);
   return '';
 }
 

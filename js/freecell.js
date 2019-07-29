@@ -194,6 +194,7 @@ freeCell.movePark = function(card, index) {
   return false;
 };
 
+//todo!放置S3後S4無法放置,show()後發現h0為NaN
 freeCell.moveHome = function(card, index) {
   if (!freeCell.isSameSuit(card, freeCell.home[index])) {
     return false;
@@ -221,11 +222,15 @@ freeCell.moveSquare = function(card, index) {
   }  
   let draggable = freeCell.numDraggable(card) > 0;
   let notTooLong = freeCell.numDraggable(card) <= freeCell.numMovable(emptySquare - 1, emptyPark);
-  if (freeCell.square[index].length == 0 && draggable && notTooLong) {
-    let token = freeCell.takeCard(freeCell.findCard(card), freeCell.numDraggable(card));
-    freeCell.placeCard('s' + index, token);
-
-    return true;
+  if (freeCell.square[index].length == 0) {
+    if (draggable && notTooLong) {
+      let token = freeCell.takeCard(freeCell.findCard(card), freeCell.numDraggable(card));
+      freeCell.placeCard('s' + index, token);
+      return true;
+    }
+    else {
+      return false;
+    }
   }
   let diffColor = !freeCell.isSameColor(card, freeCell.square[index][freeCell.square[index].length - 1]);
   let lessOne = freeCell.numDiff(card, freeCell.square[index][freeCell.square[index].length - 1]) == -1;
