@@ -126,6 +126,13 @@ function cardMouseDown(e) {
   return false;
 }
 
+function onDblClick(e) {
+  console.log(e,'救我');
+  e.preventDefault();
+  freeCell.autoMove(e.target.id);
+  e.target.style.zIndex = 55;
+}
+
 function createCards() {
   for (let i = 0; i <= 51; i++) {
     let suit = Math.ceil((i + 1) / 13);
@@ -138,6 +145,9 @@ function createCards() {
     element.style.backgroundImage = 'url(card/card_' + (i + 1) + '.png)';
     element.addEventListener('mousedown', function() {
       cardMouseDown(event);
+    });
+    element.addEventListener('dblclick', function() {
+      onDblClick(event);
     });
     if (suit == 1) {
       element.id = 'S' + freeCell.lookUpTable[point];
@@ -163,7 +173,6 @@ function moveCard(card, destination, index) {
   card.style.top = deck.offsetTop + (cardInterval * vh * (index - 1)) + 'px';
   //console.log('mcard', card.id);
   card.style.left = deck.offsetLeft + 'px';
-  card.style.zIndex = 50 + index;
   //console.log(card.style.zIndex);
   setTimeout(function() {
     card.style.zIndex = index;

@@ -187,10 +187,13 @@ body {
   border-radius: 50%;
   border: none;
   background-color: #FAFAD7;
-  display: inline-block;
   cursor: pointer;
   box-sizing: border-box;
-  box-shadow: 3px 3px #FFAA19;
+  box-shadow: .5vh .5vh #FFAA19;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .button button:active {
@@ -204,18 +207,19 @@ body {
 .button img {
   width: 5vh;
   height: 5vh;
-  text-align: center;
-  vertical-align: middle;
 }
 
 #restartwindow {
+  position: absolute;
+  top: 32.5%;
+  left: calc(50% - 35vh);
   display: none;
   width: 70vh;
   height: 35vh;
   z-index: 100;
   background-color: #FAFAD7;
-  border: 5px solid #FFBC00;
-  border-radius: 50px;
+  border: 1.5vh solid #FFBC00;
+  border-radius: 10vh;
   font-size: 6.8vh;
   justify-content: space-around;
   align-items: center;

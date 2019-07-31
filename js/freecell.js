@@ -80,7 +80,7 @@ freeCell.takeCard = function(target, number) {
   }
   if (target[0] == 'h') {
     token.push(freeCell.home[target[1]]);
-    freeCell.home[target[1]] = freeCell.home[target[1]][0] + freeCell.lookUpTable[freeCell.home[target[1]][1]] - 1;
+    freeCell.home[target[1]] = freeCell.home[target[1]][0] + freeCell.lookUpTable[freeCell.lookUpTable[freeCell.home[target[1]][1]] - 1];
     return token;
   }
   if (target[0] == 's') {
@@ -249,13 +249,13 @@ freeCell.autoMove = function (card) {
       return true;
     }
   }
-  for (let i = 0; i < freeCell.park.length; i++) {
-    if (freeCell.move(card, 'p' + i)) {
+  for (let i = 0; i < freeCell.square.length; i++) {
+    if (freeCell.move(card, 's' + i)) {
       return true;
     }
   }
-  for (let i = 0; i < freeCell.square.length; i++) {
-    if (freeCell.move(card, 's' + i)) {
+  for (let i = 0; i < freeCell.park.length; i++) {
+    if (freeCell.move(card, 'p' + i)) {
       return true;
     }
   }
