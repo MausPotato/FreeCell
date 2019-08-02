@@ -194,7 +194,6 @@ freeCell.movePark = function(card, index) {
   return false;
 };
 
-//todo!放置S3後S4無法放置,show()後發現h0為NaN
 freeCell.moveHome = function(card, index) {
   if (!freeCell.isSameSuit(card, freeCell.home[index])) {
     return false;

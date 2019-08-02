@@ -133,12 +133,22 @@ function onDblClick(e) {
     if (!isGameStart) {
       isGameStart = true;
       timerStart();
+    }//
+    let dest = freeCell.findCard(e.target.id);
+    let element;
+    if (dest[0] == 'p' || dest[0] == 'h') {
+      element = document.getElementById(e.target.id);
+      element.style.zIndex = 55;
     }
-    let dest = freeCell.square[freeCell.findCard(e.target.id)[1]];
-    for(let i = dest.length - freeCell.numDraggable(e.target.id); i < dest.length; i++) {
-      let element = document.getElementById(dest[i]);
-      element.style.zIndex = 50 + i;
+    if (dest[0] == 's') {
+      for (let i = freeCell.square[dest[1]].length - freeCell.numDraggable(e.target.id); i < freeCell.square[dest[1]].length; i++) {
+        element = document.getElementById(freeCell.square[dest[1]][i]);
+        element.style.zIndex = 50 + i;
+      }
     }
+  }
+  if (freeCell.isWin()) {
+    timerPause();
   }
   render();
 }
