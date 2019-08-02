@@ -127,10 +127,20 @@ function cardMouseDown(e) {
 }
 
 function onDblClick(e) {
-  console.log(e,'救我');
   e.preventDefault();
-  freeCell.autoMove(e.target.id);
-  e.target.style.zIndex = 55;
+  let moveSuccess = freeCell.autoMove(e.target.id);
+  if (moveSuccess) {
+    if (!isGameStart) {
+      isGameStart = true;
+      timerStart();
+    }
+    let dest = freeCell.square[freeCell.findCard(e.target.id)[1]];
+    for(let i = dest.length - freeCell.numDraggable(e.target.id); i < dest.length; i++) {
+      let element = document.getElementById(dest[i]);
+      element.style.zIndex = 50 + i;
+    }
+  }
+  render();
 }
 
 function createCards() {
@@ -174,11 +184,15 @@ function moveCard(card, destination, index) {
   //console.log('mcard', card.id);
   card.style.left = deck.offsetLeft + 'px';
   //console.log(card.style.zIndex);
-  setTimeout(function() {
+  let timeOutId = setTimeout(function() {
+    if (card.id == 'HA') {
+      console.log('HA zindex set');
+    }
     card.style.zIndex = index;
     card.classList.remove('slowmove');
     //console.log(card.style.zIndex);
   }, 500);
+  return timeOutId;
 }
 
 function collision(x1, y1, x2, y2, w, h) {
@@ -225,27 +239,32 @@ function collisionAll(card) {
   return '';
 }
 
+var timeOutId = [];
 function render() {
   calculateVh();
+  for (let i = 0; i < timeOutId.length; i++) {
+    clearTimeout(timeOutId[i]);
+  }
+  timeOutId = [];
   //random deck
   let element;
   for (let i = 0; i < 4; i++) {
     //renderPark
     if (freeCell.park[i] != '') {
       element = document.getElementById(freeCell.park[i]);
-      moveCard(element, 'p' + i, 1);
+      timeOutId.push(moveCard(element, 'p' + i, 1));
     }
     //renderHome
     for (let j = freeCell.lookUpTable[freeCell.home[i][1]]; j > 0; j--) {
       element = document.getElementById(freeCell.home[i][0] + freeCell.lookUpTable[j]);
       console.log(j);
-      moveCard(element, 'h' + i, 1);
+      timeOutId.push(moveCard(element, 'h' + i, 1));
     }
   }  
   for (let i = 0; i < freeCell.square.length; i++) {
     for (let j = 0; j < freeCell.square[i].length; j++) {
       element = document.getElementById(freeCell.square[i][j]);
-      moveCard(element, 's' + i, j + 1);
+      timeOutId.push(moveCard(element, 's' + i, j + 1));
     }
   }
 }
@@ -254,7 +273,7 @@ function initialize() {
   freeCell.initial();
   timerReset();
   shuffle();
-  render();
+  setTimeout(render, 100);
 }
 
 function shuffle() {
@@ -272,6 +291,7 @@ function shuffle() {
     element.style.top = 100 + 'vh';
     //console.log('shuffle', element.style.top, element.id);
     element.style.left = 76 + 'vh';
+    element.style.zIndex =  Math.ceil((i + 1) / 8);
   }
 }
 
