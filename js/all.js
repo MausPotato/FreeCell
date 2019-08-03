@@ -1,23 +1,17 @@
+// 禁止右建選單
 document.addEventListener("contextmenu", function(e){
   e.preventDefault();
 }, false);
 
-var time, timerId, resizeId;
-var cardInterval = 5;
-var vh;
-var isMousePressed = false;
-var draggedCards = [];
-var isGameStart = false;
+// 調整視窗時牌會依照視窗大小重新render,200為防止過度呼叫方順
+var resizeId;
+window.addEventListener('resize', function(){
+  clearTimeout(resizeId);
+  resizeId = setTimeout(render, 200);
+}, true);
 
-window.onload = function () {
-  createCards();
-  initialize();
-  window.addEventListener('resize', function(){
-    clearTimeout(resizeId);
-    resizeId = setTimeout(render, 200);
-  }, true);
-};
-
+// timer介面
+var time, timerId;
 function timing() {
   time++;
   timerRender();
@@ -33,14 +27,15 @@ function timerPause() {
 
 function timerReset() {
   time = 0;
-  timerPause();
   timerRender();
+  timerPause();
+  // todo試著移出timer
   isGameStart = false;
 }
 
 function timerRender() {
   let m = Math.floor(time / 60);
-  let s = time - m * 60;
+  let s = time % 60;
   if (s < 10) {
     s = '0' + s;
   }
@@ -50,18 +45,46 @@ function timerRender() {
   document.getElementById('clock').innerHTML = m + ':' + s;
 }
 
-function boardMouseDown(e) {
-  e.preventDefault();
-  if(e.button == 0) {
-    isMousePressed = true;
+// HTML載入後進行
+window.onload = function () {
+  createCards();
+  initialize();
+};
+
+// 卡片製造
+function createCards() {
+  for (let i = 0; i <= 51; i++) {
+    let suit = Math.ceil((i + 1) / 13);
+    let point = i % 13 + 1;
+    let element = document.createElement('div');
+    element.classList.add('card');
+    element.style.top = 100 + 'vh';
+    element.style.left = 76 + 'vh';
+    element.style.backgroundImage = 'url(card/card_' + (i + 1) + '.png)';
+    element.addEventListener('mousedown', function() {
+      cardMouseDown(event);
+    });
+    element.addEventListener('dblclick', function() {
+      cardDblClick(event);
+    });
+    // 利用未洗牌的deck直接給id
+    element.id = freeCell.deck[i];
+    document.querySelector('.gameboard').appendChild(element);
   }
 }
 
+// 牌的間距(考慮移除,改用牌的高度)
+var cardInterval = 5, vh;
+function calculateVh() {
+  vh = window.innerHeight / 100;
+}
+
+var draggedCards = [];
+var isGameStart = false;
 function boardMouseMove(e) {
-  if (isMousePressed && draggedCards.length != 0) {
-    for (var i = 0; i < draggedCards.length; i++) {
+  if (draggedCards.length != 0) {
+    for (let i = 0; i < draggedCards.length; i++) {
       draggedCards[i].card.style.top = (e.pageY - draggedCards[i].offsetY) + 'px';
-      //console.log('mmove', draggedCards[i].card.id);
       draggedCards[i].card.style.left = (e.pageX - draggedCards[i].offsetX) + 'px';
       draggedCards[i].card.style.zIndex = 50 + i;
     }
@@ -69,30 +92,24 @@ function boardMouseMove(e) {
 }
 
 function boardMouseUp(e) {
-  //console.log(e.button, 'release');
-  if (e.button == 0) {
-    isMousePressed = false;
-    if (draggedCards.length != 0) {
-      let card = draggedCards[0].card;
-      let c = collisionAll(card);
-      //moveCard(card, c, freeCell.square[c[1]].length + 1);
-      //draggedCards[0].card.style.zIndex = freeCell.square[c[1]].length + 1;
-      if (c == '') {
-        render();
+  if (e.button != 0) {
+    return;
+  }
+  if (draggedCards.length != 0) {
+    let card = draggedCards[0].card;
+    let moveTo = collisionAll(card);
+    if (moveTo != '') {
+      let moveSuccess = freeCell.move(card.id, moveTo);
+      if (moveSuccess && !isGameStart) {
+        isGameStart = true;
+        timerStart();
       }
-      else {
-        let moveSuccess = freeCell.move(card.id, c);
-        if (moveSuccess && !isGameStart) {
-          isGameStart = true;
-          timerStart();
-        }
-        render();
-        if (freeCell.isWin()) {
-          timerPause();
-        }
+      if (freeCell.isWin()) {
+        timerPause();
       }
-      draggedCards = [];
     }
+    render();
+    draggedCards = [];
   }
 }
 
@@ -112,7 +129,7 @@ function cardMouseDown(e) {
       }
     }
     else if (deck[0] == 's') {
-      for (var i = 0; i < freeCell.numDraggable(e.target.id); i++) {
+      for (let i = 0; i < freeCell.numDraggable(e.target.id); i++) {
         let element = document.getElementById(freeCell.square[deck[1]][freeCell.square[deck[1]].length - freeCell.numDraggable(e.target.id) + i]);
         let draggedCard = {
           card: element,
@@ -126,14 +143,15 @@ function cardMouseDown(e) {
   return false;
 }
 
-function onDblClick(e) {
+function cardDblClick(e) {
   e.preventDefault();
+  //todo 把動畫從搭波click分離
   let moveSuccess = freeCell.autoMove(e.target.id);
   if (moveSuccess) {
     if (!isGameStart) {
       isGameStart = true;
       timerStart();
-    }//
+    }
     let dest = freeCell.findCard(e.target.id);
     let element;
     if (dest[0] == 'p' || dest[0] == 'h') {
@@ -153,40 +171,8 @@ function onDblClick(e) {
   render();
 }
 
-function createCards() {
-  for (let i = 0; i <= 51; i++) {
-    let suit = Math.ceil((i + 1) / 13);
-    let point = i % 13 + 1;
-    let element = document.createElement('div');
-    element.classList.add('card');
-    element.style.top = 100 + 'vh';
-    //console.log('ccards', element.id);
-    element.style.left = 76 + 'vh';
-    element.style.backgroundImage = 'url(card/card_' + (i + 1) + '.png)';
-    element.addEventListener('mousedown', function() {
-      cardMouseDown(event);
-    });
-    element.addEventListener('dblclick', function() {
-      onDblClick(event);
-    });
-    if (suit == 1) {
-      element.id = 'S' + freeCell.lookUpTable[point];
-    }
-    if (suit == 2) {
-      element.id = 'H' + freeCell.lookUpTable[point];
-    }
-    if (suit == 3) {
-      element.id = 'D' + freeCell.lookUpTable[point];
-    }
-    if (suit == 4) {
-      element.id = 'C' + freeCell.lookUpTable[point];
-    }
-    document.querySelector('.gameboard').appendChild(element);
-  }
-}
-
 function moveCard(card, destination, index) {
-  //card is a element, destination是字串
+  // card is a element, destination是字串
   let deck = document.getElementById(destination);
   let cardInterval = Math.min(50 / freeCell.square[destination[1]].length, 5);
   card.classList.add('slowmove');
@@ -205,47 +191,44 @@ function moveCard(card, destination, index) {
   return timeOutId;
 }
 
-function collision(x1, y1, x2, y2, w, h) {
-  return Math.abs(x1 - x2) < w / 2 && Math.abs(y1 - y2) < 2 * h / 3;
+function collision(card1, card2) {
+  const overlapW = 1 / 2;
+  const overlapH = 2 / 3;
+  let w = card1.offsetWidth;
+  let h = card1.offsetHeight;
+  let deltaX = Math.abs(card1.offsetLeft - card2.offsetLeft);
+  let deltaY = Math.abs(card1.offsetTop - card2.offsetTop);
+  return deltaX < (w * overlapW) && deltaY < (h * overlapH);
 }
 
 function collisionAll(card) {
   let element;
-  let x = card.offsetLeft;
-  let y = card.offsetTop;
-  let w = card.offsetWidth;
-  let h = card.offsetHeight;
   for (let i = 0; i < 4; i++) {
     element = document.getElementById('p' + i);
-    if (collision(x, y, element.offsetLeft, element.offsetTop, w, h)) {
+    if (collision(card, element)) {
       return 'p' + i;
     }
     element = document.getElementById('h' + i);
-    if (collision(x, y, element.offsetLeft, element.offsetTop, w, h)) {
+    if (collision(card, element)) {
       return 'h' + i;
     }
   }
   let deck = freeCell.findCard(card.id);
-  let targetDebug = 'targetDebug:';
   for (let i = 0; i < freeCell.square.length; i++) {
+    // 如果同牌堆不做碰撞
     if (deck[0] == 's' && deck[1] == i) {
       continue;
     }
-    let target;
+    // 如果牌堆有牌則撞最後一張,沒有則直接碰撞地板
+    let target = 's' + i;
     if (freeCell.square[i].length >= 1) {
       target = freeCell.square[i][freeCell.square[i].length - 1];
     }
-    else {
-      target = 's' + i;
-    }
-    targetDebug += (' ' + target);
     element = document.getElementById(target);
-    if (collision(x, y, element.offsetLeft, element.offsetTop, w, h)) {
-      console.log(element);
+    if (collision(card, element)) {
       return 's' + i;
     }
   }
-  console.log(targetDebug);
   return '';
 }
 
@@ -303,10 +286,6 @@ function shuffle() {
     element.style.left = 76 + 'vh';
     element.style.zIndex =  Math.ceil((i + 1) / 8);
   }
-}
-
-function calculateVh() {
-  vh = window.innerHeight / 100;
 }
 
 function restart(e) {
