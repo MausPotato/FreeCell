@@ -171,6 +171,13 @@ function cardDblClick(e) {
   render();
 }
 
+var animationMap = new Map();
+function moveAnimation(card, top, left, slowmove) {
+  card.style.top = top;
+  card.style.left = left;
+
+}
+
 function moveCard(card, destination, index) {
   // card is a element, destination是字串
   let deck = document.getElementById(destination);
@@ -178,12 +185,10 @@ function moveCard(card, destination, index) {
   card.classList.add('slowmove');
   card.style.top = deck.offsetTop + (cardInterval * vh * (index - 1)) + 'px';
   //console.log('mcard', card.id);
+  moveAnimation(card, deck.offsetTop, deck.offsetLeft, true);
   card.style.left = deck.offsetLeft + 'px';
   //console.log(card.style.zIndex);
   let timeOutId = setTimeout(function() {
-    if (card.id == 'HA') {
-      console.log('HA zindex set');
-    }
     card.style.zIndex = index;
     card.classList.remove('slowmove');
     //console.log(card.style.zIndex);
