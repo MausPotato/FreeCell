@@ -1,14 +1,19 @@
 // 禁止右建選單
-document.addEventListener("contextmenu", function(e){
+document.addEventListener('contextmenu', function(e){
   e.preventDefault();
-}, false);
+});
+
+// 12~16原本應為這樣↓,為了取消前次動畫故加上一個變數方便記錄與刪除
+/*window.addEventListener('resize', function() {
+  render();
+});*/
 
 // 調整視窗時牌會依照視窗大小重新render,200為防止過度呼叫方順
 var resizeId;
 window.addEventListener('resize', function(){
   clearTimeout(resizeId);
   resizeId = setTimeout(render, 200);
-}, true);
+});
 
 // timer介面
 var time, timerId;
@@ -51,20 +56,27 @@ window.onload = function () {
   initialize();
 };
 
+// 作用同54~57
+/*window.addEventListener('load', function() {
+  createCards();
+  initialize();
+});*/
+
 // 卡片製造
 function createCards() {
-  for (let i = 0; i <= 51; i++) {
-    let suit = Math.ceil((i + 1) / 13);
-    let point = i % 13 + 1;
+  for (let i = 0; i < 52; i++) {
+    // 69~70原要做為id使用
+    /*let suit = Math.ceil((i + 1) / 13);
+    let point = i % 13 + 1;*/
     let element = document.createElement('div');
     element.classList.add('card');
     element.style.top = 100 + 'vh';
     element.style.left = 76 + 'vh';
     element.style.backgroundImage = 'url(card/card_' + (i + 1) + '.png)';
-    element.addEventListener('mousedown', function() {
+    element.addEventListener('mousedown', function(event) {
       cardMouseDown(event);
     });
-    element.addEventListener('dblclick', function() {
+    element.addEventListener('dblclick', function(event) {
       cardDblClick(event);
     });
     // 利用未洗牌的deck直接給id
