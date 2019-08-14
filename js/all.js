@@ -94,40 +94,44 @@ function calculateVh() {
 var draggedCards = [];
 var isGameStart = false;
 function boardMouseMove(e) {
-  if (draggedCards.length != 0) {
-    for (let i = 0; i < draggedCards.length; i++) {
-      draggedCards[i].card.style.top = (e.pageY - draggedCards[i].offsetY) + 'px';
-      draggedCards[i].card.style.left = (e.pageX - draggedCards[i].offsetX) + 'px';
-      draggedCards[i].card.style.zIndex = 50 + i;
-    }
+  // 練習新的for..of寫法,替代舊有for迴圈(104~110)
+  for (let [i, cardElement] of draggedCards.entries()) {
+    cardElement.card.style.top = (e.pageY - cardElement.offsetY) + 'px';
+    cardElement.card.style.left = (e.pageX - cardElement.offsetX) + 'px';
+    cardElement.card.style.zIndex = 50 + i;
   }
 }
+/*function boardMouseMove(e) {
+  for (let i = 0; i < draggedCards.length; i++) {
+    draggedCards[i].card.style.top = (e.pageY - draggedCards[i].offsetY) + 'px';
+    draggedCards[i].card.style.left = (e.pageX - draggedCards[i].offsetX) + 'px';
+    draggedCards[i].card.style.zIndex = 50 + i;
+  }
+}*/
 
 function boardMouseUp(e) {
-  if (e.button != 0) {
+  if (e.button != 0 || draggedCards.length == 0) {
     return;
   }
-  if (draggedCards.length != 0) {
-    let card = draggedCards[0].card;
-    let moveTo = collisionAll(card);
-    if (moveTo != '') {
-      let moveSuccess = freeCell.move(card.id, moveTo);
-      if (moveSuccess && !isGameStart) {
-        isGameStart = true;
-        timerStart();
-      }
-      if (freeCell.isWin()) {
-        timerPause();
-      }
+  let card = draggedCards[0].card;
+  let moveTo = collisionAll(card);
+  if (moveTo != '') {
+    let moveSuccess = freeCell.move(card.id, moveTo);
+    if (moveSuccess && !isGameStart) {
+      //todo 提出做另一個function
+      isGameStart = true;
+      timerStart();
     }
-    render();
-    draggedCards = [];
+    if (freeCell.isWin()) {
+      timerPause();
+    }
   }
+  render();
+  draggedCards = [];
 }
 
 function cardMouseDown(e) {
   console.log(e.target.id + 'is clicked');
-  e.preventDefault();
   if (e.button == 0) {
     let deck = freeCell.findCard(e.target.id);
     if (deck[0] == 'p' || deck[0] == 'h') {
@@ -152,6 +156,7 @@ function cardMouseDown(e) {
       }
     }
   }
+  e.preventDefault();
   return false;
 }
 
