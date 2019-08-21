@@ -79,14 +79,17 @@ body {
   justify-content: space-around;
 }
 
-.park {
+.park, .home, .card, .square{
   width: 14vh;
   height: 18vh;
-  background-image: url(../card/p.png);
   -webkit-background-size: contain;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center center;
+}
+
+.park {
+  background-image: url(../card/p.png);
 }
 
 .timer {
@@ -110,15 +113,6 @@ body {
   font-size: 8vh;
   font-weight: bold;
   padding-bottom: 3.3vh;
-}
-
-.home {
-  width: 14vh;
-  height: 18vh;
-  -webkit-background-size: contain;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
 }
 
 #h0 {
@@ -145,19 +139,8 @@ body {
   justify-content: space-between;
 }
 
-.square {
-  width: 14vh;
-  height: 18vh;
-}
-
 .card {
-  width: 14vh;
-  height: 18vh;
   position: absolute;
-  -webkit-background-size: contain;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
   /*transition: top 0.2s;*/
 }
 
@@ -250,4 +233,14 @@ body {
 
 .slowmove {
   transition: top .5s, left .5s;
+}
+
+#disableclick {
+  position: absolute;
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99;
+  opacity: .6;
+  background-color: black;
 }

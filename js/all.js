@@ -54,7 +54,38 @@ function timerRender() {
 window.onload = function () {
   createCards();
   initialize();
+  let restartBtn = document.getElementById('restart');
+  let no = document.getElementById('no');
+  let yes = document.getElementById('yes');
+  restartBtn.addEventListener('click', function() {
+    restartMenu(true);
+    timerPause();
+  }, false);
+  no.addEventListener('click', function() {
+    restartMenu(false);
+    if (isGameStart) {
+      timerStart();      
+    }
+  }, false);
+  yes.addEventListener('click', function() {
+    restartMenu(false);
+    initialize();
+  }, false);
 };
+
+function restartMenu(show) {
+  let restartWindow = document.getElementById('restartwindow');
+  let disableClick = document.getElementById('disableclick');
+  // restartWindow.style.display = (show ? 'flex' : 'none');
+  if (show) {
+    restartWindow.style.display = 'flex';
+    disableClick.style.display = 'block';
+  }
+  else {
+    restartWindow.style.display = 'none';
+    disableClick.style.display = 'none';
+  }
+}
 
 // 作用同54~57
 /*window.addEventListener('load', function() {
@@ -308,8 +339,4 @@ function shuffle() {
     element.style.left = 76 + 'vh';
     element.style.zIndex =  Math.ceil((i + 1) / 8);
   }
-}
-
-function restart(e) {
-  initialize();
 }

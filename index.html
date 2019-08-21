@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
 	<meta charset="UTF-8">
 	<title>FreeCell</title>
@@ -9,6 +9,7 @@
 	<script src="js/all.js"></script>
 </head>
 <body onmousedown="return false" onmousemove="boardMouseMove(event)" onmouseup="boardMouseUp(event)">
+  <div id="disableclick" onclick="return false"></div>
 	<div class="gameboard">
     <div class="up">
     <div id="p0" class="park"></div>
@@ -40,7 +41,7 @@
     <div class="button">
       <button id="undo"><img src="img/icon_undo.png"></button>
       <button id="hint"><img src="img/icon_hint.png"></button>
-      <button id="restart" onclick="restart(event)"><img src="img/icon_restart.png"></button>
+      <button id="restart"><img src="img/icon_restart.png"></button>
     </div>
     <div id="restartwindow">
       <h2>START A NEW GAME?</h2>
