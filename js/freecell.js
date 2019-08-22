@@ -1,3 +1,4 @@
+window.DEBUG = true;
 var freeCell = {};
 freeCell.deck = [
   'SA', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'SX', 'SJ', 'SQ', 'SK',
@@ -12,6 +13,9 @@ freeCell.initial = function() {
   freeCell.square = [[],[],[],[],[],[],[],[]];
   freeCell.movement = [];
 }
+
+// let token = freeCell.takeCard('s6', 5);
+// placeCard('s3', token);
 
 function show() {
   console.log('   home:', freeCell.home);
