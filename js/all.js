@@ -57,20 +57,30 @@ window.onload = function () {
   let restartBtn = document.getElementById('restart');
   let no = document.getElementById('no');
   let yes = document.getElementById('yes');
+  let body = document.getElementsByTagName('body');
+  let disableclick = document.getElementById('disableclick');
   restartBtn.addEventListener('click', function() {
     restartMenu(true);
     timerPause();
-  }, false);
+  });
   no.addEventListener('click', function() {
     restartMenu(false);
     if (isGameStart) {
       timerStart();      
     }
-  }, false);
+  });
   yes.addEventListener('click', function() {
     restartMenu(false);
     initialize();
-  }, false);
+  });
+  body[0].addEventListener('mousedown', function(e) {
+    e.preventDefault();
+  });
+  body[0].addEventListener('mousemove', boardMouseMove);
+  body[0].addEventListener('mouseup', boardMouseUp);
+  disableclick.addEventListener('click', function(e) {
+    e.preventDefault();
+  });
 };
 
 function restartMenu(show) {

@@ -6,10 +6,11 @@
 	<link rel="stylesheet" href="css/style.css">
   <link href="https://fonts.googleapis.com/css?family=Heebo&display=swap" rel="stylesheet">
   <script src="js/freecell.js"></script>
+  <script src="js/game.js"></script>
 	<script src="js/all.js"></script>
 </head>
-<body onmousedown="return false" onmousemove="boardMouseMove(event)" onmouseup="boardMouseUp(event)">
-  <div id="disableclick" onclick="return false"></div>
+<body>
+  <div id="disableclick"></div>
 	<div class="gameboard">
     <div class="up">
     <div id="p0" class="park"></div>
@@ -28,15 +29,15 @@
     <div class="logo">
       <a href="https://challenge.thef2e.com/user/316?schedule=2898#works-2898" target="blink"><img src="img/icon_logo.png" alt="logo"></a>
     </div>
-    <div class="table">
-      <div id="s0" class="square" onmousedown="return false"></div>
-      <div id="s1" class="square" onmousedown="return false"></div>
-      <div id="s2" class="square" onmousedown="return false"></div>
-      <div id="s3" class="square" onmousedown="return false"></div>
-      <div id="s4" class="square" onmousedown="return false"></div>
-      <div id="s5" class="square" onmousedown="return false"></div>
-      <div id="s6" class="square" onmousedown="return false"></div>
-      <div id="s7" class="square" onmousedown="return false"></div>
+    <div id="table">
+      <div id="s0" class="square"></div>
+      <div id="s1" class="square"></div>
+      <div id="s2" class="square"></div>
+      <div id="s3" class="square"></div>
+      <div id="s4" class="square"></div>
+      <div id="s5" class="square"></div>
+      <div id="s6" class="square"></div>
+      <div id="s7" class="square"></div>
     </div>
     <div class="button">
       <button id="undo"><img src="img/icon_undo.png"></button>

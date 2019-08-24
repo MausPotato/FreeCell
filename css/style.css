@@ -131,7 +131,7 @@ body {
   background-image: url(../card/c0.png);
 }
 
-.table {
+#table {
   width: 130.3vh;
   height: 69vh;
   padding-top: 4vh;
