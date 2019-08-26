@@ -20,7 +20,6 @@ const PileEnum = {
 class Card {
   // 建構函式
   constructor(suit, point) {
-    console.log(suit, point);
     this.suit = suit;
     this.point = point;
     if (suit == SuitEnum.HEART || suit == SuitEnum.DIAMOND) {
@@ -87,6 +86,12 @@ class Deck {
     this.cards = cards;
     this.maxSize = maxSize;
   }
+  size() {
+    return this.cards.length;
+  }
+  isEmpty() {
+    return this.cards.length == 0;
+  }
   push(card) {
     if (this.cards.length < this.maxSize) {
       this.cards.push(card);
@@ -98,7 +103,7 @@ class Deck {
     return new Deck(this.cards.splice(this.cards.length - number, number));
   }
   place(deck) {
-    this.cards.concat(deck.cards);
+    this.cards = this.cards.concat(deck.cards);
   }
   shuffle() {
     let length = this.cards.length;
@@ -136,17 +141,43 @@ class Deck {
 
 class FreeCell {
   constructor() {
-    this.decks = [[], [], [], []];
+    this.gameBoard = [[], [], [], []];
     this.initialize();
+    console.log(this.gameBoard);
   }
   initialize() {
     for (let i = 0; i < 4; i++) {
-      this.decks[PileEnum.CELL].push(new Deck([], 1));
-      this.decks[PileEnum.FOUNDATION].push(new Deck([], 13));
+      this.gameBoard[PileEnum.CELL].push(new Deck([], 1));
+      this.gameBoard[PileEnum.FOUNDATION].push(new Deck([], 13));
     }
     for (let i = 0; i < 8; i++) {
-      this.decks[PileEnum.TABLEAU].push(new Deck());
+      this.gameBoard[PileEnum.TABLEAU].push(new Deck());
     }
-    this.decks[PileEnum.HAND].push(new Deck());
+    this.gameBoard[PileEnum.HAND].push(new Deck());
+  }
+  deal() {
+    let deck = Deck.fullSet();
+    deck.shuffle();
+    for (let i = 0; !deck.isEmpty(); i++) {
+      this.gameBoard[PileEnum.TABLEAU][i % 8].place(deck.take(1));
+    }
+  }
+  print() {
+    console.log('CELL');
+    for (let c of this.gameBoard[PileEnum.CELL]) {
+      c.print();
+    }
+    console.log('FOUNDATION');
+    for (let f of this.gameBoard[PileEnum.FOUNDATION]) {
+      f.print();
+    }
+    console.log('TABLEAU');
+    for (let t of this.gameBoard[PileEnum.TABLEAU]) {
+      t.print();
+    }
+    console.log('HAND');
+    for (let h of this.gameBoard[PileEnum.HAND]) {
+      h.print();
+    }
   }
 }
