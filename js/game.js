@@ -137,6 +137,36 @@ class Deck {
     }
     return deck;
   }
+  static isSameSuit(deck1, deck2) {
+    let card;
+    if (!deck1.isEmpty()) {
+      card = deck1.cards[0];
+    } else if (!deck2.isEmpty()) {
+      card = deck2.cards[0];
+    } else {
+      console.log('好像怪怪的');
+      return true;
+    }
+    for (let c of deck1.cards) {
+      if (!Card.isSameSuit(card, c)) {
+        return false;
+      }
+    }
+    for (let c of deck2.cards) {
+      if (!Card.isSameSuit(card, c))
+        return false;
+    }
+    return true;
+  }
+  static isAscSeq(deck1, deck2) {
+    let cards = deck1.cards.concat(dek2.cards);
+    for (let i = 0; i < cards.length - 1; i++) {
+      if (cards[i] - cards[i + 1] != -1) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 class FreeCell {
