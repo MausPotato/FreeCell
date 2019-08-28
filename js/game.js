@@ -82,9 +82,21 @@ class Card {
 
 class Deck {
   // 建構函式
-  constructor(cards = [], maxSize = 99) {
+  constructor(cards = [], maxSize = 99, canTake = function() {}, canPlace = function() {}) {
     this.cards = cards;
     this.maxSize = maxSize;
+    this.canTake = function(number) {
+      if (number > this.size()) {
+        return false;
+      }
+      return canTake(number);
+    };
+    this.canPlace = function(deck) {
+      if (deck.size() + this.size() > this.maxSize) {
+        return false;
+      }
+      return canPlace(deck);
+    }
   }
   size() {
     return this.cards.length;
@@ -137,31 +149,37 @@ class Deck {
     }
     return deck;
   }
-  static isSameSuit(deck1, deck2) {
-    let card;
-    if (!deck1.isEmpty()) {
-      card = deck1.cards[0];
-    } else if (!deck2.isEmpty()) {
-      card = deck2.cards[0];
-    } else {
-      console.log('好像怪怪的');
-      return true;
-    }
-    for (let c of deck1.cards) {
-      if (!Card.isSameSuit(card, c)) {
+  static isSameSuit(deck1, deck2 = new Deck()) {
+    let cards = deck1.cards.concat(deck2.cards);
+    for (let i = 0; i < cards.length - 1; i++) {
+      if (!Card.isSameSuit(cards[i], cards[i + 1])) {
         return false;
       }
     }
-    for (let c of deck2.cards) {
-      if (!Card.isSameSuit(card, c))
+    return true;
+  }
+  static isAltColor(deck1, deck2 = new Deck()) {
+    let cards = deck1.cards.concat(deck2.cards);
+    for (let i = 0; i < cards.length - 1; i++) {
+      if (Card.isSameColor(cards[i], cards[i + 1])) {
         return false;
+      }
     }
     return true;
   }
-  static isAscSeq(deck1, deck2) {
+  static isAscSeq(deck1, deck2 = new Deck()) {
     let cards = deck1.cards.concat(dek2.cards);
     for (let i = 0; i < cards.length - 1; i++) {
       if (cards[i] - cards[i + 1] != -1) {
+        return false;
+      }
+    }
+    return true;
+  }
+  static isDscSeq(deck1, deck2 = new Deck()) {
+    let cards = deck1.cards.concat(deck2.cards);
+    for (let i = 0; i < cards.length - 1; i++) {
+      if (cards[i] - cards[i + 1] != 1) {
         return false;
       }
     }
@@ -173,11 +191,13 @@ class FreeCell {
   constructor() {
     this.gameBoard = [[], [], [], []];
     this.initialize();
+    this.gameBoard[PileEnum.CELL][0].canTake(2);
+    this.history = [];
     console.log(this.gameBoard);
   }
   initialize() {
     for (let i = 0; i < 4; i++) {
-      this.gameBoard[PileEnum.CELL].push(new Deck([], 1));
+      this.gameBoard[PileEnum.CELL].push(new Deck([], 1, FreeCell.cellTake));
       this.gameBoard[PileEnum.FOUNDATION].push(new Deck([], 13));
     }
     for (let i = 0; i < 8; i++) {
@@ -190,6 +210,21 @@ class FreeCell {
     deck.shuffle();
     for (let i = 0; !deck.isEmpty(); i++) {
       this.gameBoard[PileEnum.TABLEAU][i % 8].place(deck.take(1));
+    }
+  }
+  move(from, to, number) {
+    let deck = from.take(number);
+    to.place(deck);
+    let movement = {
+      from: from,
+      to: to,
+      number: number
+    }
+    this.history.push(movement);
+  }
+  undo(number) {
+    for (let i = 0; i < number; i++) {
+      let movement = this.history.pop();
     }
   }
   print() {
@@ -209,5 +244,53 @@ class FreeCell {
     for (let h of this.gameBoard[PileEnum.HAND]) {
       h.print();
     }
+  }
+  static cellTake(number) {
+    return true;
+  }
+  static cellPlace(deck) {
+    return true;
+  }
+  static foundationTake(number) {
+    if (number <= 1 && this.size() - number >= 1) {
+      return true;
+    }
+    return false;
+  }
+  static foundationPlace(deck) {
+    if (deck.size() <= 1 && Deck.isSameSuit(deck, this) && Deck.isAscSeq(deck, this)) {
+      return true;
+    }
+    return false;
+  }
+  static tableauTake(number) {
+    let deck = this.take(number);
+    if (Deck.isDscSeq(deck) && Deck.isAltColor(deck)) {
+      this.place(deck);
+      return true;
+    }
+    this.place(deck);
+    return false;
+  }
+  static tableauPlace(deck) {
+    let top = this.take(1);
+    if (Deck.isDscSeq(top, deck) && Deck.isAltColor(top, deck)) {
+      this.place(deck);
+      return true;
+    }
+    this.place(deck);
+    return false;
+  }
+  static handTake(number) {
+    if (number == this.size()) {
+      return true;
+    }
+    return false;
+  }
+  static handPlace(deck) {
+    if (Deck.isDscSeq(deck) && Deck.isAltColor(deck)) {
+      return true;
+    }
+    return false;
   }
 }
