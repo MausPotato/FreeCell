@@ -212,19 +212,25 @@ class FreeCell {
       this.gameBoard[PileEnum.TABLEAU][i % 8].place(deck.take(1));
     }
   }
-  move(from, to, number) {
+  canMove(from, to, number) {
+    
+  }
+  move(from, to, number, isUndo = false) {
     let deck = from.take(number);
     to.place(deck);
-    let movement = {
-      from: from,
-      to: to,
-      number: number
+    if (!isUndo) {
+      let movement = {
+        from: from,
+        to: to,
+        number: number
+      }
+      this.history.push(movement);
     }
-    this.history.push(movement);
   }
   undo(number) {
     for (let i = 0; i < number; i++) {
       let movement = this.history.pop();
+      this.move(movement.to, movement.from, movement.number, true);
     }
   }
   print() {
