@@ -85,17 +85,19 @@ class Deck {
   constructor(cards = [], maxSize = 99, canTake = function() {}, canPlace = function() {}) {
     this.cards = cards;
     this.maxSize = maxSize;
-    this.canTake = function(number) {
+    this.canTake = (number) => {
+      // console.log(this);
+      // console.log(canTake);
       if (number > this.size()) {
         return false;
       }
-      return canTake(number);
+      return (canTake.bind(this))(number);
     };
-    this.canPlace = function(deck) {
+    this.canPlace = (deck) => {
       if (deck.size() + this.size() > this.maxSize) {
         return false;
       }
-      return canPlace(deck);
+      return (canPlace.bind(this))(deck);
     }
   }
   size() {
@@ -168,7 +170,7 @@ class Deck {
     return true;
   }
   static isAscSeq(deck1, deck2 = new Deck()) {
-    let cards = deck1.cards.concat(dek2.cards);
+    let cards = deck1.cards.concat(deck2.cards);
     for (let i = 0; i < cards.length - 1; i++) {
       if (cards[i] - cards[i + 1] != -1) {
         return false;
@@ -197,11 +199,11 @@ class FreeCell {
   }
   initialize() {
     for (let i = 0; i < 4; i++) {
-      this.gameBoard[PileEnum.CELL].push(new Deck([], 1, FreeCell.cellTake));
-      this.gameBoard[PileEnum.FOUNDATION].push(new Deck([], 13));
+      this.gameBoard[PileEnum.CELL].push(new Deck([], 1, FreeCell.cellTake, FreeCell.cellPlace));
+      this.gameBoard[PileEnum.FOUNDATION].push(new Deck([new Card(i, 0)], 14, FreeCell.foundationTake, FreeCell.foundationPlace));
     }
     for (let i = 0; i < 8; i++) {
-      this.gameBoard[PileEnum.TABLEAU].push(new Deck());
+      this.gameBoard[PileEnum.TABLEAU].push(new Deck([], 99, FreeCell.tableauTake, FreeCell.tableauPlace));
     }
     this.gameBoard[PileEnum.HAND].push(new Deck());
   }
@@ -213,7 +215,29 @@ class FreeCell {
     }
   }
   canMove(from, to, number) {
-    
+    let canTake = from.canTake(number);
+    let deck = from.take(number);
+    let canPlace = to.canPlace(deck);
+    from.place(deck);
+    return canTake && canPlace;
+  }
+  hintPileToPile(from, to) {
+    for (let f of this.gameBoard[from]) {
+      for (let t of this.gameBoard[to]) {
+        if (this.canMove(f, t, 1)) {
+          return [f, t];
+        }
+      }
+    }
+    return false;
+  }
+  hint() {
+    return (
+      this.hintPileToPile(PileEnum.TABLEAU, PileEnum.FOUNDATION) ||
+      this.hintPileToPile(PileEnum.CELL, PileEnum.FOUNDATION) ||
+      this.hintPileToPile(PileEnum.TABLEAU, PileEnum.TABLEAU) ||
+      this.hintPileToPile(PileEnum.CELL, PileEnum.TABLEAU)
+    );
   }
   move(from, to, number, isUndo = false) {
     let deck = from.take(number);
@@ -280,6 +304,10 @@ class FreeCell {
   }
   static tableauPlace(deck) {
     let top = this.take(1);
+    console.log('tableauPlace');
+    this.print();
+    deck.print();
+    console.log(Deck.isDscSeq(top, deck), Deck.isAltColor(top, deck));
     if (Deck.isDscSeq(top, deck) && Deck.isAltColor(top, deck)) {
       this.place(deck);
       return true;
