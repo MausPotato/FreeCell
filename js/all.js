@@ -60,11 +60,20 @@ function timerRender() {
 window.onload = function () {
   createCards();
   initialize();
+  let body = document.getElementsByTagName('body');
   let restartBtn = document.getElementById('restart');
   let no = document.getElementById('no');
   let yes = document.getElementById('yes');
-  let body = document.getElementsByTagName('body');
   let disableclick = document.getElementById('disableclick');
+  let undo = document.getElementById('undo');
+  body[0].addEventListener('mousedown', function(e) {
+    e.preventDefault();
+  });
+  body[0].addEventListener('mousemove', boardMouseMove);
+  body[0].addEventListener('mouseup', boardMouseUp);
+  disableclick.addEventListener('click', function(e) {
+    e.preventDefault();
+  });
   restartBtn.addEventListener('click', function() {
     restartMenu(true);
     timerPause();
@@ -79,14 +88,10 @@ window.onload = function () {
     restartMenu(false);
     initialize();
   });
-  body[0].addEventListener('mousedown', function(e) {
-    e.preventDefault();
-  });
-  body[0].addEventListener('mousemove', boardMouseMove);
-  body[0].addEventListener('mouseup', boardMouseUp);
-  disableclick.addEventListener('click', function(e) {
-    e.preventDefault();
-  });
+  undo.addEventListener('click', function() {
+    freeCell.undo();
+    render();
+  })
 };
 
 function restartMenu(show) {

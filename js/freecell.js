@@ -11,7 +11,7 @@ freeCell.initial = function() {
   freeCell.home = ['S0', 'H0', 'D0', 'C0'];
   freeCell.park = ['', '', '', ''];
   freeCell.square = [[],[],[],[],[],[],[],[]];
-  freeCell.movement = [];
+  freeCell.history = [];
 }
 
 // let token = freeCell.takeCard('s6', 5);
@@ -193,10 +193,17 @@ freeCell.canMovePark = function(card, index) {
   return false;
 };
 
-freeCell.movePark = function(card, index) {
+freeCell.movePark = function(card, index, undo = false) {
+  if (!undo) {
+    let movement = {
+      from: freeCell.findCard(card),
+      to: 'p' + index,
+      card: card
+    }
+    freeCell.history.push(movement);
+  }
   let token = freeCell.takeCard(freeCell.findCard(card), 1);
-  freeCell.placeCard('h' + index, token);
-  let movement = {}
+  freeCell.placeCard('p' + index, token);
 };
 
 freeCell.canMoveHome = function(card, index) {
@@ -206,10 +213,17 @@ freeCell.canMoveHome = function(card, index) {
   return false;
 }
 
-freeCell.moveHome = function(card, index) {
+freeCell.moveHome = function(card, index, undo = false) {
+  if (!undo) {
+    let movement = {
+      from: freeCell.findCard(card),
+      to: 'h' + index,
+      card: card
+    }
+    freeCell.history.push(movement);
+  }
   let token = freeCell.takeCard(freeCell.findCard(card), 1);
   freeCell.placeCard('h' + index, token);
-  let movement = {}
 };
 
 freeCell.canMoveSquare = function(card, index) {
@@ -244,10 +258,17 @@ freeCell.canMoveSquare = function(card, index) {
   return false;
 }
 
-freeCell.moveSquare = function(card, index) {
-  let token = freeCell.takeCard(freeCell.findCard(card), 1);
-  freeCell.placeCard('h' + index, token);
-  let movement = {}
+freeCell.moveSquare = function(card, index, undo = false) {
+  if (!undo) {
+    let movement = {
+      from: freeCell.findCard(card),
+      to: 's' + index,
+      card: card
+    }
+    freeCell.history.push(movement);
+  }
+  let token = freeCell.takeCard(freeCell.findCard(card), freeCell.numDraggable(card));
+  freeCell.placeCard('s' + index, token);
 }
 
 freeCell.autoMove = function (card) {
@@ -274,16 +295,49 @@ freeCell.move = function (card, destination) {
   //移動卡牌, 若成功移動回傳true, 失敗回傳false
   console.log('Move ' + card + ' to ' + destination + '.');
   if (destination[0] == 'p') {
-    return freeCell.movePark(card, destination[1]);
+    if (freeCell.canMovePark(card, destination[1])) {
+      freeCell.movePark(card, destination[1]);
+      return true;
+    }
   }
   else if (destination[0] == 'h') {
-    return freeCell.moveHome(card, destination[1]);
+    if (freeCell.canMoveHome(card, destination[1])) {
+      freeCell.moveHome(card, destination[1]);
+      return true;
+    }
   }
   else if (destination[0] == 's') {
-    return freeCell.moveSquare(card, destination[1]);
+    if (freeCell.canMoveSquare(card, destination[1])) {
+      freeCell.moveSquare(card, destination[1]);
+      return true;
+    }
   }
   else {
-    console.log('error in freeCell.move()');
+    console.error('error in freeCell.move()');
   }
+  return false;
 };
 
+freeCell.undo = function() {
+  let movement = freeCell.history.pop();
+  console.log(movement);
+  if (!movement) {
+    return false;
+  }
+  if (movement.from[0] == 'p') {
+    freeCell.movePark(movement.card, movement.from[1], true);
+    return true;
+  }
+  else if (movement.from[0] == 'h') {
+    freeCell.moveHome(movement.card, movement.from[1], true);
+    return true;
+  }
+  else if (movement.from[0] == 's') {
+    freeCell.moveSquare(movement.card, movement.from[1], true);
+    return true;
+  }
+  else {
+    console.error('error in freeCell.undo()');
+  }
+  return false;
+}
