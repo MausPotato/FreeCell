@@ -50,6 +50,12 @@ function timerRender() {
   document.getElementById('clock').innerHTML = m + ':' + s;
 }
 
+// 作用同60~62
+/*window.addEventListener('load', function() {
+  createCards();
+  initialize();
+});*/
+
 // HTML載入後進行
 window.onload = function () {
   createCards();
@@ -97,16 +103,10 @@ function restartMenu(show) {
   }
 }
 
-// 作用同54~57
-/*window.addEventListener('load', function() {
-  createCards();
-  initialize();
-});*/
-
 // 卡片製造
 function createCards() {
   for (let i = 0; i < 52; i++) {
-    // 69~70原要做為id使用
+    // 110~111原要做為id使用
     /*let suit = Math.ceil((i + 1) / 13);
     let point = i % 13 + 1;*/
     let element = document.createElement('div');
@@ -135,7 +135,7 @@ function calculateVh() {
 var draggedCards = [];
 var isGameStart = false;
 function boardMouseMove(e) {
-  // 練習新的for..of寫法,替代舊有for迴圈(104~110)
+  // 練習新的for..of寫法,替代舊有for迴圈(145~151)
   for (let [i, cardElement] of draggedCards.entries()) {
     cardElement.card.style.top = (e.pageY - cardElement.offsetY) + 'px';
     cardElement.card.style.left = (e.pageX - cardElement.offsetX) + 'px';
@@ -159,7 +159,7 @@ function boardMouseUp(e) {
   if (moveTo != '') {
     let moveSuccess = freeCell.move(card.id, moveTo);
     if (moveSuccess && !isGameStart) {
-      //todo 提出做另一個function
+      // todo 提出做另一個function
       isGameStart = true;
       timerStart();
     }
@@ -229,6 +229,7 @@ function cardDblClick(e) {
   render();
 }
 
+// todo
 var animationMap = new Map();
 function moveAnimation(card, top, left, slowmove) {
   card.style.top = top;

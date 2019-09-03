@@ -186,31 +186,33 @@ freeCell.isWin = function() {
   return true;
 };
 
-freeCell.movePark = function(card, index) {
-  if (freeCell.park[index] != '') {
-    return false;
-  }
-  if (freeCell.numDraggable(card) == 1) {
-    let token = freeCell.takeCard(freeCell.findCard(card), 1);
-    freeCell.placeCard('p' + index, token);
+freeCell.canMovePark = function(card, index) {
+  if (freeCell.park[index] == '' && freeCell.numDraggable(card) == 1) {
     return true;
   }
   return false;
 };
+
+freeCell.movePark = function(card, index) {
+  let token = freeCell.takeCard(freeCell.findCard(card), 1);
+  freeCell.placeCard('h' + index, token);
+  let movement = {}
+};
+
+freeCell.canMoveHome = function(card, index) {
+  if (freeCell.isSameSuit(card, freeCell.home[index]) && freeCell.numDiff(card, freeCell.home[index]) == 1 && freeCell.numDraggable(card) == 1) {
+    return true;
+  }
+  return false;
+}
 
 freeCell.moveHome = function(card, index) {
-  if (!freeCell.isSameSuit(card, freeCell.home[index])) {
-    return false;
-  }
-  if (freeCell.numDiff(card, freeCell.home[index]) == 1 && freeCell.numDraggable(card) == 1) {
-    let token = freeCell.takeCard(freeCell.findCard(card), 1);
-    freeCell.placeCard('h' + index, token);
-    return true;
-  }
-  return false;
+  let token = freeCell.takeCard(freeCell.findCard(card), 1);
+  freeCell.placeCard('h' + index, token);
+  let movement = {}
 };
 
-freeCell.moveSquare = function(card, index) {
+freeCell.canMoveSquare = function(card, index) {
   let emptySquare = 0;
   for (let i = 0; i < freeCell.square.length; i++) {
     if (freeCell.square[i].length == 0) {
@@ -222,13 +224,11 @@ freeCell.moveSquare = function(card, index) {
     if (freeCell.park[i] == '') {
       emptyPark++;
     }
-  }  
+  }
   let draggable = freeCell.numDraggable(card) > 0;
   let notTooLong = freeCell.numDraggable(card) <= freeCell.numMovable(emptySquare - 1, emptyPark);
   if (freeCell.square[index].length == 0) {
     if (draggable && notTooLong) {
-      let token = freeCell.takeCard(freeCell.findCard(card), freeCell.numDraggable(card));
-      freeCell.placeCard('s' + index, token);
       return true;
     }
     else {
@@ -239,11 +239,15 @@ freeCell.moveSquare = function(card, index) {
   let lessOne = freeCell.numDiff(card, freeCell.square[index][freeCell.square[index].length - 1]) == -1;
   notTooLong = freeCell.numDraggable(card) <= freeCell.numMovable(emptySquare, emptyPark);
   if (diffColor && lessOne && draggable && notTooLong) {
-    let token = freeCell.takeCard(freeCell.findCard(card), freeCell.numDraggable(card));
-    freeCell.placeCard('s' + index, token);
     return true;
   }
   return false;
+}
+
+freeCell.moveSquare = function(card, index) {
+  let token = freeCell.takeCard(freeCell.findCard(card), 1);
+  freeCell.placeCard('h' + index, token);
+  let movement = {}
 }
 
 freeCell.autoMove = function (card) {
