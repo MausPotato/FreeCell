@@ -54,10 +54,18 @@ body {
   font-family: Haettenschweiler-Regular;
   overflow: hidden;
   background-image: url(../img/freecell_bg.png);
+  width: 100vw;
+  height: 100vh;
 }
 
+/*
+     width height
+vw:  100vw  60vw
+vh:  166vh 100vh
+*/
+
 .gameboard {
-  width: 166vh;
+  width: 160vh;
   height: 100vh;
   padding: 4vh;
   margin: 0 auto;
@@ -65,11 +73,15 @@ body {
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: flex-start;
-  box-sizing: border-box;
-  -webkit-background-size: contain;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
+  box-sizing: border-box; 
+}
+
+@media (max-aspect-ratio: 1000 / 625) {
+  .gameboard {
+    width: 100vw;
+    height: 62.5vw;
+    padding: 2.5vw;
+  }
 }
 
 .up {
@@ -79,7 +91,14 @@ body {
   justify-content: space-around;
 }
 
-.park, .home, .card, .square{
+@media (max-aspect-ratio: 1000 / 625) {
+  .up {
+    width: 100vw;
+    height: 11.25vw;
+  }
+}
+
+.park, .home, .card, .square {
   width: 14vh;
   height: 18vh;
   -webkit-background-size: contain;
@@ -88,12 +107,41 @@ body {
   background-position: center center;
 }
 
+@media (max-aspect-ratio: 1000 / 625) {
+  .park, .home, .card, .square {
+    width: 8.75vw;
+    height: 11.25vw;
+  }
+}
+
+.hint {
+  width: 12.4vh;
+  height: 16.4vh;
+  background-image: url(../img/hint.png);
+  background-position: 50% 70%;
+  -webkit-background-size: 70%;
+  background-size: 70%;
+  border-radius: 1.5vh;
+  border: .8vh solid #FAFAD7;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+@media (max-aspect-ratio: 1000 / 625) {
+  .hint {
+    width: 7.75vw;
+    height: 10.25vw;
+    border-radius: .94vw;
+    border: .5vw solid #FAFAD7;
+  }
+}
+
 .park {
   background-image: url(../card/p.png);
 }
 
 .timer {
-  width: 16.6vh;
+  width: 16vh;
   height: 18vh;
   display: flex;
   justify-content: center;
@@ -101,11 +149,25 @@ body {
   flex-wrap: wrap;
 }
 
+@media (max-aspect-ratio: 1000 / 625) {
+  .timer {
+    width: 10vw;
+    height: 11.25vw;
+  }
+}
+
 .timer h2 {
   text-align: center;
   font-size: 6.8vh;
   font-weight: bold;
-  padding-top: 2.5vh;
+  padding-top: 2.4vh;
+}
+
+@media (max-aspect-ratio: 1000 / 625) {
+  .timer h2 {
+    font-size: 4.25vw;
+    padding: 1.5vw;
+  }
 }
 
 #clock {
@@ -113,6 +175,13 @@ body {
   font-size: 8vh;
   font-weight: bold;
   padding-bottom: 3.3vh;
+}
+
+@media (max-aspect-ratio: 1000 / 625) {
+  #clock {
+    font-size: 5vw;
+    padding-bottom: 2vw;
+  }
 }
 
 #h0 {
@@ -139,6 +208,14 @@ body {
   justify-content: space-between;
 }
 
+@media (max-aspect-ratio: 1000 / 625) {
+  #table {
+    width: 81.44vw;
+    height: 43vw;
+    padding-top: 2.5vw;
+  }
+}
+
 .card {
   position: absolute;
   /*transition: top 0.2s;*/
@@ -154,6 +231,13 @@ body {
   height: 8.3vh;
 }
 
+@media (max-aspect-ratio: 1000 / 625) {
+  .logo img {
+    width: 5.2vw;
+    height: 5.2vw;
+  }
+}
+
 .button {
   width: 7.5vh;
   height: 28vh;
@@ -162,6 +246,13 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+}
+
+@media (max-aspect-ratio: 1000 / 625) {
+  .button {
+    width: 4.7vw;
+    height: 17.5vw;
+  }
 }
 
 .button button {
@@ -179,6 +270,14 @@ body {
   align-items: center;
 }
 
+@media (max-aspect-ratio: 1000 / 625) {
+  .button button {
+    width: 4.7vw;
+    height: 4.7vw;
+    box-shadow: .3vw .3vw #FFAA19
+  }
+}
+
 .button button:active {
   box-shadow: 0 0 0 1px rgba(255,170,25, 0.15) inset, 0 0 6px rgba(255,170,25, 0.20) inset;
 }
@@ -190,6 +289,13 @@ body {
 .button img {
   width: 5vh;
   height: 5vh;
+}
+
+@media (max-aspect-ratio: 1000 / 625) {
+  .button img {
+    width: 3.125vw;
+    height: 3.125vw;
+  }
 }
 
 #restartwindow {
@@ -209,28 +315,52 @@ body {
   flex-wrap: wrap;
 }
 
+@media (max-aspect-ratio: 1000 / 625) {
+  #restartwindow {
+    left: calc(50% - 22vw);
+    width: 43.75vw;
+    height: 21.9vw;
+    border: 1vw solid #FFBC00;
+    border-radius: 6.25vw;
+    font-size: 4.25vw;
+  }
+}
+
 #restartwindow h2 {
   width: 100%;
   text-align: center;
   padding-top: 5.8vh;
 }
 
+@media (max-aspect-ratio: 1000 / 625) {
+  #restarwindow {
+    padding-top: 3.625vw;
+  }
+}
+
 #restartwindow a {
   text-decoration: none;
 }
 
-#no {
-  color: #FA5050;
+#no, #yes {
   margin-bottom: 5vh;
   margin-left: 8.3vh;
 }
 
-#yes {
-  color: #3CBE6E;
-  margin-bottom: 5vh;
-  margin-right: 8.3vh;
+@media (max-aspect-ratio: 1000 / 625) {
+  #no, #yes {
+    margin-bottom: 3.125vw;
+    margin-left: 5.2vw;
+  }
 }
 
+#no {
+  color: #FA5050;
+}
+
+#yes {
+  color: #3CBE6E;
+}
 .slowmove {
   transition: top .5s, left .5s;
 }
