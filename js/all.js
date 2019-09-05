@@ -103,22 +103,29 @@ window.onload = function () {
 };
 
 // todo完成這個
-function hint(id) {
-  let hintCard = document.getElementsByClassName('hint')[0];
-  let card = document.getElementById(id);
-  hintCard.style.top = card.style.top;
-  hintCard.style.left = card.style.left;
-  hintCard.style.zIndex = parseInt(card.style.zIndex);
-  hintCard.style.display = 'block';
+function hint(input) {
+  for (let i = 0; i < 2; i++) {
+    let hintCard = document.getElementsByClassName('hint')[i];
+    let card = document.getElementById(input[i]);
+    hintCard.style.top = card.style.top;
+    hintCard.style.left = card.style.left;
+    hintCard.style.zIndex = parseInt(card.style.zIndex);
+    hintCard.style.display = 'block';
+  }
 }
 
-function restartMenu(show) {
+function restartMenu(show, win = false) {
   let restartWindow = document.getElementById('restartwindow');
   let disableClick = document.getElementById('disableclick');
   // restartWindow.style.display = (show ? 'flex' : 'none');
   if (show) {
     restartWindow.style.display = 'flex';
     disableClick.style.display = 'block';
+    if (win) {
+      let winTitle = document.getElementById('title');
+      winTitle.textContent = 'YOU WIN!';
+      winTitle.style.display = 'block';
+    }
   }
   else {
     restartWindow.style.display = 'none';
@@ -178,11 +185,39 @@ function checkGameStatus() {
     isGameStart = true;
     timerStart();
   }
+  let canAutoMove;
+  do {
+    canAutoMove = false;
+    let card;
+    for (let i = 0; i < freeCell.square.length; i++) {
+      if (freeCell.square[i].length == 0) {
+        continue;
+      }
+      card = freeCell.square[i][freeCell.square[i].length - 1];
+      for (let j = 0; j < freeCell.home.length; j++) {
+        console.log(card);
+        if (freeCell.move(card, 'h' + j)) {
+          canAutoMove = true;
+        }
+      }
+    }
+    for (let i = 0; i < freeCell.park.length; i++) {
+      card = freeCell.park[i];
+      if (card == '') {
+        continue;
+      }
+      for (let j = 0; j < freeCell.home.length; j++) {
+        if (freeCell.move(card, 'h' + j)) {
+          canAutoMove = true;
+        }
+      }
+    }
+  } while (canAutoMove == true);
   if (freeCell.isWin()) {
     timerPause();
     isGameStart = false;
+    restartMenu(true, true);
   }
-  return true;
 }
 
 function boardMouseUp(e) {
