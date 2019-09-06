@@ -5,7 +5,7 @@ document.addEventListener('contextmenu', function(e){
   e.preventDefault();
 });
 
-// 12~16原本應為這樣↓,為了取消前次動畫故加上一個變數方便記錄與刪除
+// 原本resize應為這樣↓,為了取消前次動畫故加上一個變數方便記錄與刪除
 /*window.addEventListener('resize', function() {
   render();
 });*/
@@ -92,25 +92,52 @@ window.onload = function () {
     restartMenu(false);
     initialize();
   });
-  // todo牌會掉下去
   undo.addEventListener('click', function() {
     freeCell.undo();
     render();
   })
   hint.addEventListener('click', function() {
-    
+    findHint();
   })
 };
 
-// todo完成這個
-function hint(input) {
+function findHint() {
+  for (let p of freeCell.park) {
+    if (p == '') {
+      continue;
+    }
+    for (let [i, s] of freeCell.square.entries()) {
+      if (s.length == 0) {
+        continue;
+      }
+      if (freeCell.canMoveSquare(p, i)) {
+        showHint([p, s[s.length - 1]]);
+        return;
+      }
+    }
+  }
+  for (let from of freeCell.square) {
+    if (from.length == 0) {
+      continue;
+    }
+    for (let [i, to] of freeCell.square.entries()) {
+      if (to.length == 0) {
+        continue;
+      }
+      if (freeCell.canMoveSquare(from[from.length - 1], i)) {
+        showHint([from[from.length - 1], to[to.length - 1]]);
+        return;
+      }
+    }
+  }
+}
+
+function showHint(id) {
   for (let i = 0; i < 2; i++) {
     let hintCard = document.getElementsByClassName('hint')[i];
-    let card = document.getElementById(input[i]);
-    hintCard.style.top = card.style.top;
-    hintCard.style.left = card.style.left;
-    hintCard.style.zIndex = parseInt(card.style.zIndex);
+    let card = document.getElementById(id[i]);
     hintCard.style.display = 'block';
+    moveAnimation(hintCard, card.style.top, card.style.left, card.style.zIndex, false);
   }
 }
 
@@ -158,6 +185,7 @@ function createCards() {
     let hint = document.createElement('div');
     hint.classList.add('hint');
     hint.style.display = 'none';
+    hint.id = 'HINT' + i;
     document.querySelector('.gameboard').appendChild(hint);
   }
 }
@@ -167,9 +195,9 @@ var isGameStart = false;
 function boardMouseMove(e) {
   // 練習新的for..of寫法,替代舊有for迴圈(145~151)
   for (let [i, cardElement] of draggedCards.entries()) {
-    cardElement.card.style.top = (e.pageY - cardElement.offsetY) + 'px';
-    cardElement.card.style.left = (e.pageX - cardElement.offsetX) + 'px';
-    cardElement.card.style.zIndex = 50 + i;
+    let top = (e.pageY - cardElement.offsetY) + 'px';
+    let left = (e.pageX - cardElement.offsetX) + 'px';
+    moveAnimation(cardElement.card, top, left, i, false);
   }
 }
 /*function boardMouseMove(e) {
@@ -269,52 +297,41 @@ function cardMouseDown(e) {
 
 function cardDblClick(e) {
   e.preventDefault();
-  //todo 把動畫從搭波click分離
   let moveSuccess = freeCell.autoMove(e.target.id);
   if (moveSuccess) {
     checkGameStatus();
-    let dest = freeCell.findCard(e.target.id);
-    let element;
-    if (dest[0] == 'p' || dest[0] == 'h') {
-      element = document.getElementById(e.target.id);
-      element.style.zIndex = 55;
-    }
-    if (dest[0] == 's') {
-      for (let i = freeCell.square[dest[1]].length - freeCell.numDraggable(e.target.id); i < freeCell.square[dest[1]].length; i++) {
-        element = document.getElementById(freeCell.square[dest[1]][i]);
-        element.style.zIndex = 50 + i;
-      }
-    }
   }
   render();
 }
 
-// todo
 var animationMap = new Map();
-function moveAnimation(card, top, left, slowmove) {
+function moveAnimation(card, top, left, zIndex, slowmove) {
+  if (card.style.top == top && card.style.left == left) {
+    return;
+  }
+  clearTimeout(animationMap.get(card.id));
   card.style.top = top;
   card.style.left = left;
-
+  card.style.zIndex = 50 + zIndex;
+  if (slowmove) {
+    card.classList.add('slowmove');
+  }
+  let id = setTimeout(function() {
+    card.style.zIndex = zIndex;
+    if (slowmove) {
+      card.classList.remove('slowmove');
+    }
+  }, 500);
+  animationMap.set(card.id, id);
 }
 
 function moveCard(card, destination, index) {
   // card is a element, destination是字串
   let deck = document.getElementById(destination);
-  // cardInterval * vh             (  5 vh)
-  //          new * offsetHeight   (.45 offsetHeight)
   let cardInterval = Math.min(CARD_INTERVAL * 10 / freeCell.square[destination[1]].length, CARD_INTERVAL);
-  card.classList.add('slowmove');
-  card.style.top = deck.offsetTop + (Math.round(cardInterval * card.offsetHeight) * (index - 1)) + 'px';
-  //console.log('mcard', card.id);
-  moveAnimation(card, deck.offsetTop, deck.offsetLeft, true);
-  card.style.left = deck.offsetLeft + 'px';
-  //console.log(card.style.zIndex);
-  let timeOutId = setTimeout(function() {
-    card.style.zIndex = index;
-    card.classList.remove('slowmove');
-    //console.log(card.style.zIndex);
-  }, 500);
-  return timeOutId;
+  let top = deck.offsetTop + (Math.round(cardInterval * card.offsetHeight) * (index - 1)) + 'px';
+  let left = deck.offsetLeft + 'px';
+  moveAnimation(card, top, left, index, true);
 }
 
 function collision(card1, card2) {
@@ -358,31 +375,25 @@ function collisionAll(card) {
   return '';
 }
 
-var timeOutId = [];
 function render() {
-  for (let i = 0; i < timeOutId.length; i++) {
-    clearTimeout(timeOutId[i]);
-  }
-  timeOutId = [];
   //random deck
   let element;
   for (let i = 0; i < 4; i++) {
     //renderPark
     if (freeCell.park[i] != '') {
       element = document.getElementById(freeCell.park[i]);
-      timeOutId.push(moveCard(element, 'p' + i, 1));
+      moveCard(element, 'p' + i, 1);
     }
     //renderHome
     for (let j = freeCell.lookUpTable[freeCell.home[i][1]]; j > 0; j--) {
       element = document.getElementById(freeCell.home[i][0] + freeCell.lookUpTable[j]);
-      console.log(j);
-      timeOutId.push(moveCard(element, 'h' + i, 1));
+      moveCard(element, 'h' + i, 1);
     }
   }  
   for (let i = 0; i < freeCell.square.length; i++) {
     for (let j = 0; j < freeCell.square[i].length; j++) {
       element = document.getElementById(freeCell.square[i][j]);
-      timeOutId.push(moveCard(element, 's' + i, j + 1));
+      moveCard(element, 's' + i, j + 1);
     }
   }
 }
@@ -407,9 +418,7 @@ function shuffle() {
   for (let i = 0; i < freeCell.deck.length; i++) {
     freeCell.square[i % 8].push(freeCell.deck[i]);
     let element = document.getElementById(freeCell.deck[i]);
-    element.style.top = 100 + '%';
-    //console.log('shuffle', element.style.top, element.id);
-    element.style.left = 50 + '%';
-    element.style.zIndex =  Math.ceil((i + 1) / 8);
+    let zIndex =  Math.ceil((i + 1) / 8);
+    moveAnimation(element, 100 + '%', 50 + '%', zIndex, false);
   }
 }
